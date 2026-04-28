@@ -1,5 +1,6 @@
 import logo from "@/assets/feelflow-logo.png";
 import { ArrowRight, ArrowUpRight, Check, Minus } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Index = () => {
   return (
@@ -26,63 +27,152 @@ const Index = () => {
       {/* HERO */}
       <section className="relative pt-40 pb-32 px-6 lg:px-10">
         <div className="absolute inset-0 bg-mesh pointer-events-none" />
-        <div className="absolute top-20 right-0 w-[600px] h-[600px] bg-primary/20 blur-3xl rounded-full animate-flow pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary-glow/15 blur-3xl rounded-full animate-flow pointer-events-none" style={{ animationDelay: '4s' }} />
+        <motion.div
+          className="absolute top-20 right-0 w-[600px] h-[600px] bg-primary/20 blur-3xl rounded-full pointer-events-none"
+          animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.1, 0.95, 1] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary-glow/15 blur-3xl rounded-full pointer-events-none"
+          animate={{ x: [0, -30, 20, 0], y: [0, 20, -30, 0], scale: [1, 0.9, 1.1, 1] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
 
         <div className="max-w-7xl mx-auto relative">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-8 animate-fade-up">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary-deep mb-8">
+            <motion.div
+              className="lg:col-span-8"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+              }}
+            >
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary-deep mb-8"
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 Estruturação operacional para empresas em crescimento
-              </div>
+              </motion.div>
               <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] leading-[0.95] font-semibold text-balance tracking-tight">
-                Sua empresa cresceu.
-                <br />
-                <span className="font-serif italic font-normal text-primary-deep">Mas a operação</span>
-                <br />
-                <span className="font-serif italic font-normal text-primary-deep">não acompanhou.</span>
+                {[
+                  <>Sua empresa cresceu.</>,
+                  <span className="font-serif italic font-normal text-primary-deep">Mas a operação</span>,
+                  <span className="font-serif italic font-normal text-primary-deep">não acompanhou.</span>,
+                ].map((line, i) => (
+                  <motion.span
+                    key={i}
+                    className="block overflow-hidden"
+                    variants={{
+                      hidden: { opacity: 0, y: 60 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+                      },
+                    }}
+                  >
+                    {line}
+                  </motion.span>
+                ))}
               </h1>
-              <p className="mt-10 text-lg md:text-xl text-ink-soft max-w-2xl leading-relaxed">
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="mt-10 text-lg md:text-xl text-ink-soft max-w-2xl leading-relaxed"
+              >
                 A FeelFlow reorganiza operações que funcionam no improviso — estruturando processos, conectando sistemas e eliminando o excesso de trabalho manual para que o negócio cresça com mais clareza, controle e eficiência.
-              </p>
+              </motion.p>
 
-              <div className="mt-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <a href="#cta-final" className="group inline-flex items-center gap-3 bg-ink text-background px-7 py-4 rounded-full text-base font-medium hover:bg-primary hover:text-primary-foreground transition-all shadow-elevated hover:shadow-flow">
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="mt-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center"
+              >
+                <motion.a
+                  href="#cta-final"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group inline-flex items-center gap-3 bg-ink text-background px-7 py-4 rounded-full text-base font-medium hover:bg-primary hover:text-primary-foreground transition-colors shadow-elevated hover:shadow-flow"
+                >
                   Quero entender onde minha operação trava
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
-              <p className="mt-5 text-sm text-ink-soft/80 max-w-md">
+                </motion.a>
+              </motion.div>
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { duration: 0.8, delay: 0.1 } },
+                }}
+                className="mt-5 text-sm text-ink-soft/80 max-w-md"
+              >
                 Uma conversa estratégica para identificar gargalos e oportunidades na sua operação.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
-            <div className="lg:col-span-4 hidden lg:flex justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-flow blur-3xl opacity-40 rounded-full" />
-                <img src={logo} alt="" className="relative w-72 h-72 object-contain animate-flow" />
-              </div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -8 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+              className="lg:col-span-4 hidden lg:flex justify-center"
+            >
+              <motion.div
+                className="relative"
+                animate={{ y: [0, -16, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-flow blur-3xl opacity-40 rounded-full"
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <img src={logo} alt="" className="relative w-72 h-72 object-contain" />
+              </motion.div>
+            </motion.div>
           </div>
 
           {/* metric strip */}
-          <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-border">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+            }}
+            className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-border"
+          >
             {[
               { k: "Decisões", v: "centralizadas" },
               { k: "Retrabalho", v: "constante" },
               { k: "Visibilidade", v: "limitada" },
               { k: "Operação", v: "no limite" },
             ].map((s, i) => (
-              <div key={i} className="space-y-1">
+              <motion.div
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="space-y-1"
+              >
                 <div className="text-xs uppercase tracking-widest text-ink-soft/60">Sintomas</div>
                 <div className="text-lg">
                   <span className="text-ink-soft">{s.k}</span>{" "}
                   <span className="font-serif italic text-primary-deep">{s.v}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
