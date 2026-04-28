@@ -2,61 +2,83 @@ import { motion } from "framer-motion";
 
 /**
  * FlowAnimation
- * Conceito: do caos ao fluxo. Nós espalhados (operação no improviso)
- * convergem para uma rede organizada (operação estruturada),
- * pulsam, e voltam ao caos — em loop infinito.
+ * Conceito: do caos ao fluxo. Nós espalhados (improviso) convergem
+ * traçando o "F" da logo FeelFlow — um caminho contínuo —
+ * pulsam e voltam ao caos. Loop infinito.
  */
 const FlowAnimation = () => {
-  // Posições "caos" (aleatórias) e "ordem" (grade fluida) para 12 nós
-  const chaos = [
-    { x: 40, y: 60 }, { x: 220, y: 30 }, { x: 360, y: 90 },
-    { x: 80, y: 180 }, { x: 280, y: 200 }, { x: 410, y: 230 },
-    { x: 50, y: 300 }, { x: 200, y: 320 }, { x: 380, y: 350 },
-    { x: 120, y: 420 }, { x: 290, y: 440 }, { x: 420, y: 410 },
-  ];
+  // Caminho do "F" da logo (orgânico, curvo): 16 nós ao longo do contorno
+  // viewBox 0 0 480 540 — F centralizado
   const order = [
-    { x: 60, y: 120 }, { x: 180, y: 90 }, { x: 300, y: 110 }, // top flow
-    { x: 420, y: 140 },
-    { x: 100, y: 230 }, { x: 230, y: 240 }, { x: 360, y: 250 }, // middle flow
-    { x: 80, y: 360 }, { x: 210, y: 350 }, { x: 340, y: 360 }, // bottom flow
-    { x: 430, y: 340 }, { x: 160, y: 440 },
+    // topo arredondado descendo pela direita
+    { x: 330, y: 60 },
+    { x: 370, y: 100 },
+    { x: 380, y: 150 },
+    // descida pela lateral direita até a curva
+    { x: 350, y: 200 },
+    // travessa do meio (a "barra" horizontal do F)
+    { x: 280, y: 220 },
+    { x: 220, y: 220 },
+    { x: 165, y: 230 },
+    // ponto de junção / coluna principal descendo
+    { x: 230, y: 280 },
+    { x: 245, y: 330 },
+    { x: 250, y: 380 },
+    // base curvada do F
+    { x: 240, y: 430 },
+    { x: 215, y: 470 },
+    { x: 175, y: 485 },
+    // curva interna superior (recanto do F)
+    { x: 195, y: 110 },
+    { x: 165, y: 160 },
+    { x: 195, y: 175 },
   ];
 
-  // Conexões da rede organizada
+  // Posições iniciais "caos" — espalhadas
+  const chaos = [
+    { x: 60, y: 80 }, { x: 410, y: 50 }, { x: 50, y: 200 },
+    { x: 430, y: 230 }, { x: 90, y: 320 }, { x: 380, y: 310 },
+    { x: 30, y: 430 }, { x: 200, y: 30 }, { x: 440, y: 420 },
+    { x: 130, y: 480 }, { x: 350, y: 480 }, { x: 70, y: 140 },
+    { x: 410, y: 150 }, { x: 270, y: 90 }, { x: 100, y: 380 },
+    { x: 360, y: 380 },
+  ];
+
+  // Conexões traçando o caminho do F (sequência contínua + curva interna)
   const edges: Array<[number, number]> = [
+    // arco superior do F
     [0, 1], [1, 2], [2, 3],
-    [0, 4], [1, 5], [2, 6], [3, 6],
-    [4, 5], [5, 6],
-    [4, 7], [5, 8], [6, 9], [6, 10],
-    [7, 8], [8, 9], [9, 10],
-    [8, 11], [7, 11],
+    // travessa do meio
+    [3, 4], [4, 5], [5, 6],
+    // coluna descendo
+    [6, 7], [7, 8], [8, 9], [9, 10],
+    // base curvada
+    [10, 11], [11, 12],
+    // curva interna (o "recorte" do F)
+    [0, 13], [13, 14], [14, 15], [15, 5],
+    // reforços de fluxo
+    [4, 7],
   ];
-
-  // Loop: 0% caos -> 35% ordem -> 70% ordem (mantém) -> 100% caos
-  const nodeAnim = (c: { x: number; y: number }, o: { x: number; y: number }, i: number) => ({
-    cx: [c.x, o.x, o.x, c.x],
-    cy: [c.y, o.y, o.y, c.y],
-  });
 
   return (
     <div className="relative w-full h-full">
       <svg
-        viewBox="0 0 480 500"
+        viewBox="0 0 480 540"
         className="w-full h-full"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="hsl(142 80% 65%)" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="hsl(142 71% 50%)" stopOpacity="0.4" />
+            <stop offset="0%" stopColor="hsl(142 80% 65%)" stopOpacity="1" />
+            <stop offset="100%" stopColor="hsl(142 71% 50%)" stopOpacity="0.5" />
           </linearGradient>
           <radialGradient id="nodeGrad" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="hsl(142 80% 65%)" />
             <stop offset="100%" stopColor="hsl(158 60% 22%)" />
           </radialGradient>
           <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -64,7 +86,7 @@ const FlowAnimation = () => {
           </filter>
         </defs>
 
-        {/* Edges — só aparecem quando o sistema se organiza */}
+        {/* Edges desenhando o F */}
         <g filter="url(#glow)">
           {edges.map(([a, b], i) => (
             <motion.line
@@ -74,30 +96,30 @@ const FlowAnimation = () => {
               x2={order[b].x}
               y2={order[b].y}
               stroke="url(#edgeGrad)"
-              strokeWidth="1.2"
+              strokeWidth="3"
               strokeLinecap="round"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{
                 pathLength: [0, 1, 1, 0],
-                opacity: [0, 0.9, 0.9, 0],
+                opacity: [0, 1, 1, 0],
               }}
               transition={{
                 duration: 9,
-                times: [0, 0.4, 0.7, 1],
+                times: [0, 0.45, 0.72, 1],
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: i * 0.04,
+                delay: i * 0.05,
               }}
             />
           ))}
         </g>
 
-        {/* Partículas viajando pelas conexões (fluxo de informação) */}
-        {edges.slice(0, 8).map(([a, b], i) => (
+        {/* Partículas viajando pelo caminho do F */}
+        {edges.slice(0, 13).map(([a, b], i) => (
           <motion.circle
             key={`p-${i}`}
-            r="2.5"
-            fill="hsl(142 80% 65%)"
+            r="3"
+            fill="hsl(142 85% 75%)"
             filter="url(#glow)"
             animate={{
               cx: [order[a].x, order[b].x],
@@ -105,77 +127,81 @@ const FlowAnimation = () => {
               opacity: [0, 1, 1, 0],
             }}
             transition={{
-              duration: 2.2,
+              duration: 1.8,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: 3 + i * 0.25,
-              repeatDelay: 6.5,
+              delay: 4 + i * 0.18,
+              repeatDelay: 7,
             }}
           />
         ))}
 
-        {/* Nós: caos -> ordem -> caos */}
+        {/* Nós: caos -> formam o F -> voltam ao caos */}
         {chaos.map((c, i) => (
           <g key={i}>
             <motion.circle
-              r="10"
-              fill="hsl(142 71% 50% / 0.15)"
+              r="12"
+              fill="hsl(142 71% 50% / 0.18)"
               animate={{
-                ...nodeAnim(c, order[i], i),
-                r: [6, 10, 10, 6],
-                opacity: [0.4, 1, 1, 0.4],
+                cx: [c.x, order[i].x, order[i].x, c.x],
+                cy: [c.y, order[i].y, order[i].y, c.y],
+                r: [6, 12, 12, 6],
+                opacity: [0.3, 1, 1, 0.3],
               }}
               transition={{
                 duration: 9,
-                times: [0, 0.4, 0.7, 1],
+                times: [0, 0.4, 0.72, 1],
                 repeat: Infinity,
                 ease: [0.22, 1, 0.36, 1],
-                delay: i * 0.05,
+                delay: i * 0.04,
               }}
             />
             <motion.circle
-              r="4"
+              r="5"
               fill="url(#nodeGrad)"
               filter="url(#glow)"
-              animate={nodeAnim(c, order[i], i)}
+              animate={{
+                cx: [c.x, order[i].x, order[i].x, c.x],
+                cy: [c.y, order[i].y, order[i].y, c.y],
+              }}
               transition={{
                 duration: 9,
-                times: [0, 0.4, 0.7, 1],
+                times: [0, 0.4, 0.72, 1],
                 repeat: Infinity,
                 ease: [0.22, 1, 0.36, 1],
-                delay: i * 0.05,
+                delay: i * 0.04,
               }}
             />
           </g>
         ))}
 
-        {/* Label sutil que aparece no momento "ordem" */}
+        {/* Labels que alternam */}
         <motion.text
           x="240"
-          y="490"
+          y="525"
           textAnchor="middle"
           className="fill-primary-deep"
-          style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", fontFamily: "Inter, sans-serif" }}
-          animate={{ opacity: [0, 0, 0.7, 0.7, 0] }}
+          style={{ fontSize: 11, letterSpacing: "0.35em", textTransform: "uppercase", fontFamily: "Inter, sans-serif", fontWeight: 500 }}
+          animate={{ opacity: [0, 0, 0.85, 0.85, 0] }}
           transition={{
             duration: 9,
-            times: [0, 0.35, 0.45, 0.7, 0.8],
+            times: [0, 0.4, 0.5, 0.72, 0.82],
             repeat: Infinity,
             ease: "easeInOut",
           }}
         >
-          fluxo organizado
+          fluxo
         </motion.text>
         <motion.text
           x="240"
-          y="490"
+          y="525"
           textAnchor="middle"
           className="fill-ink-soft"
-          style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", fontFamily: "Inter, sans-serif" }}
-          animate={{ opacity: [0.6, 0.6, 0, 0, 0.6] }}
+          style={{ fontSize: 11, letterSpacing: "0.35em", textTransform: "uppercase", fontFamily: "Inter, sans-serif" }}
+          animate={{ opacity: [0.5, 0.5, 0, 0, 0.5] }}
           transition={{
             duration: 9,
-            times: [0, 0.2, 0.35, 0.85, 1],
+            times: [0, 0.25, 0.4, 0.85, 1],
             repeat: Infinity,
             ease: "easeInOut",
           }}
