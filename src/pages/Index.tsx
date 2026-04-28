@@ -126,7 +126,7 @@ const Index = () => {
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
               className="lg:col-span-4 hidden lg:flex justify-center"
             >
-              <div className="relative w-[420px] h-[440px]">
+              <div className="relative w-[420px] h-[520px]">
                 <motion.div
                   className="absolute inset-0 bg-flow blur-3xl opacity-25 rounded-full"
                   animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
