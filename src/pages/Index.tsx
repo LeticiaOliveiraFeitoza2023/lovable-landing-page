@@ -1,6 +1,7 @@
 import logo from "@/assets/feelflow-logo.png";
 import { ArrowRight, ArrowUpRight, Check, Minus } from "lucide-react";
 import { motion } from "framer-motion";
+import FlowAnimation from "@/components/FlowAnimation";
 
 const Index = () => {
   return (
@@ -125,18 +126,16 @@ const Index = () => {
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
               className="lg:col-span-4 hidden lg:flex justify-center"
             >
-              <motion.div
-                className="relative"
-                animate={{ y: [0, -16, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              >
+              <div className="relative w-[420px] h-[440px]">
                 <motion.div
-                  className="absolute inset-0 bg-flow blur-3xl opacity-40 rounded-full"
-                  animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 bg-flow blur-3xl opacity-25 rounded-full"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+                  transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
                 />
-                <img src={logo} alt="" className="relative w-72 h-72 object-contain" />
-              </motion.div>
+                <div className="relative w-full h-full">
+                  <FlowAnimation />
+                </div>
+              </div>
             </motion.div>
           </div>
 
