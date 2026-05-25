@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import logo from "@/assets/Horizontal_2.png";
 import leticiaPhoto from "@/assets/leticia.jpg";
-import icebergImg from "@/assets/iceberg2.png";
-import { ChevronDown } from "lucide-react";
-import { motion, useReducedMotion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
+import icebergImg from "@/assets/iceberg.jpeg";
+import { ChevronDown, Menu, X, Settings, Zap, Monitor, BarChart2, Link2, Bot, TrendingUp, RefreshCw, Building2 } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
 
 /* ─── Motion presets ─── */
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -36,13 +36,15 @@ const Rule = () => (
 );
 
 /* ─── FAQ Accordion ─── */
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqItem({ q, a, id }: { q: string; a: string; id: string }) {
   const [open, setOpen] = useState(false);
   const paragraphs = a.split("\n\n");
   return (
     <div className={`border-b border-border/50 last:border-0 ${open ? "bg-primary/[0.015]" : ""} transition-colors duration-300`}>
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-controls={`faq-panel-${id}`}
         className="w-full flex items-center justify-between py-5 text-left gap-6 group"
       >
         <span className={`text-[15px] font-medium leading-snug transition-colors duration-300 ${open ? "text-ink" : "text-ink-soft group-hover:text-ink"}`}>
@@ -52,7 +54,12 @@ function FaqItem({ q, a }: { q: string; a: string }) {
           <ChevronDown className="w-4 h-4 text-ink-soft/50" />
         </span>
       </button>
-      <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${open ? "max-h-96 pb-6" : "max-h-0"}`}>
+      <div
+        id={`faq-panel-${id}`}
+        role="region"
+        aria-labelledby={`faq-btn-${id}`}
+        className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${open ? "max-h-96 pb-6" : "max-h-0"}`}
+      >
         <div className="pr-10">
           {paragraphs.map((p, i) => (
             <p key={i} className="text-ink-soft leading-[1.7] text-[14px]">{p}</p>
@@ -127,42 +134,64 @@ function AnimatedNumber({
 export default function Index() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [showTyping, setShowTyping] = useState(false);
+  const [showMaioria, setShowMaioria] = useState(false);
+  const [showFeel, setShowFeel] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [vh, setVh] = useState(typeof window !== "undefined" ? window.innerHeight : 800);
   const prefersReduced = useReducedMotion();
 
-  /* ─── Scrollytelling hero ─── */
-  // hero = 280vh. Range de scroll = (280-100)vh = 180vh.
-  // useScroll() rastreia window.scrollY diretamente — máxima compatibilidade com framer-motion v12.
-  const { scrollY } = useScroll();
-  const HERO_END = typeof window !== "undefined" ? window.innerHeight * 1.8 : 1440;
+  /* ─── Detectar mobile e reagir a resize ─── */
+  useEffect(() => {
+    const update = () => {
+      setVh(window.innerHeight);
+      setIsMobile(window.innerWidth < 768);
+    };
+    update();
+    window.addEventListener("resize", update, { passive: true });
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
-  // Iceberg: começa à direita/pequeno, cresce e centraliza
-  const rawIceX       = useTransform(scrollY, [0, HERO_END * 0.65], ["8%", "-6%"]);
-  const rawIceScale   = useTransform(scrollY, [0, HERO_END * 0.65], [2.0, 1.28]);
-  const rawIceY       = useTransform(scrollY, [0, HERO_END * 0.65], ["46%", "0%"]);
+  /* ─── Scrollytelling hero ─── */
+  const { scrollY } = useScroll();
+  const HERO_END      = vh * 1.8;
+  const HERO_TOTAL    = vh * 2.6;
+  const HERO_EXTENDED = vh * 3.4;
+
+  // Iceberg: zoom out → centraliza → zoom in suave no final (dá tempo de ler)
+  const rawIceX       = useTransform(scrollY, [0, HERO_END * 0.65, HERO_TOTAL * 0.84, HERO_EXTENDED * 0.94], ["16%", "8%", "0%", "0%"]);
+  const rawIceScale   = useTransform(scrollY, [0, HERO_END * 0.65, HERO_TOTAL * 0.84, HERO_EXTENDED * 0.94], [2.3, 1.95, 1.65, 1.55]);
+  const rawIceY       = useTransform(scrollY, [0, HERO_END * 0.65], ["34%", "0%"]);
   const rawIceOpacity = useTransform(scrollY, [0, HERO_END * 0.55], [0.52, 1.0]);
   const iceX          = useSpring(rawIceX,       { stiffness: 40, damping: 18 });
   const iceScale      = useSpring(rawIceScale,   { stiffness: 40, damping: 18 });
   const iceY          = useSpring(rawIceY,       { stiffness: 40, damping: 18 });
   const iceOpacity    = useSpring(rawIceOpacity, { stiffness: 40, damping: 18 });
 
-  // Hero text fades out, TESE content fades in
+  // Hero text fades out — acontece cedo, deixa espaço para os 3 elementos TESE
   const heroOpacity  = useTransform(scrollY, [HERO_END * 0.08, HERO_END * 0.28], [1, 0]);
-  const teseOpacity  = useTransform(scrollY, [HERO_END * 0.35, HERO_END * 0.58], [0, 1]);
-  const rawTeseY     = useTransform(scrollY, [HERO_END * 0.35, HERO_END * 0.58], [44, 0]);
-  const teseY        = useSpring(rawTeseY, { stiffness: 52, damping: 22 });
   const scrollHintOp = useTransform(scrollY, [0, HERO_END * 0.07], [1, 0]);
 
-  useMotionValueEvent(teseOpacity, "change", (v) => {
-    if (v > 0.65 && !showTyping) setShowTyping(true);
-    if (v < 0.2) setShowTyping(false);
+  // ── Elemento 1: "O que a maioria vê" — aparece no 2º scroll
+  const maioriaOpacity = useTransform(scrollY, [HERO_END * 0.56, HERO_END * 0.72], [0, 1]);
+  const rawMaioriaY    = useTransform(scrollY, [HERO_END * 0.56, HERO_END * 0.72], [36, 0]);
+  const maioriaY       = useSpring(rawMaioriaY, { stiffness: 28, damping: 30 });
+
+  // ── Elemento 3: "O que a FeelFlow mapeia" — aparece no 3º scroll
+  const feelOpacity    = useTransform(scrollY, [HERO_TOTAL * 0.58, HERO_TOTAL * 0.72], [0, 1]);
+  const rawFeelY       = useTransform(scrollY, [HERO_TOTAL * 0.58, HERO_TOTAL * 0.72], [36, 0]);
+  const feelY          = useSpring(rawFeelY, { stiffness: 28, damping: 30 });
+
+  useMotionValueEvent(maioriaOpacity, "change", (v) => {
+    if (v > 0.5 && !showMaioria) setShowMaioria(true);
+    if (v < 0.15) setShowMaioria(false);
+  });
+  useMotionValueEvent(feelOpacity, "change", (v) => {
+    if (v > 0.5 && !showFeel) setShowFeel(true);
+    if (v < 0.15) setShowFeel(false);
   });
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 32);
-    window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 32));
 
   /* Active nav section — IntersectionObserver */
   useEffect(() => {
@@ -183,15 +212,19 @@ export default function Index() {
     <div className="min-h-screen bg-background text-ink" style={{ overflowX: "clip" }}>
 
       {/* ══════════════ NAV ══════════════ */}
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-700 ${
-        scrolled
-          ? "bg-background/92 backdrop-blur-xl border-b border-border/40 shadow-[0_1px_0_0_hsl(220_10%_88%/0.6)]"
-          : "bg-transparent"
-      }`}>
+      <nav
+        aria-label="Navegação principal"
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-700 ${
+          scrolled
+            ? "bg-background/92 backdrop-blur-xl border-b border-border/40 shadow-[0_1px_0_0_hsl(220_10%_88%/0.6)]"
+            : "bg-transparent"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-6 lg:px-10 h-[68px] flex items-center justify-between">
           <a href="#" className="flex items-center">
-            <img src={logo} alt="FeelFlow" className="h-12 w-auto" style={{ transform: "scale(1.5)", transformOrigin: "left center" }} />
+            <img src={logo} alt="FeelFlow" className="h-10 w-auto" />
           </a>
+          {/* Links desktop */}
           <div className="hidden md:flex items-center gap-10 text-[13px] text-ink-soft font-medium tracking-wide">
             {[
               { href: "#como-funciona", label: "Como Funciona" },
@@ -206,28 +239,79 @@ export default function Index() {
                   key={link.href}
                   href={link.href}
                   className={`relative transition-colors duration-200 after:absolute after:left-0 after:-bottom-0.5 after:h-px after:bg-primary after:transition-all after:duration-300
-                    ${isActive
-                      ? "text-ink after:w-full"
-                      : "text-ink-soft hover:text-ink after:w-0 hover:after:w-full"
-                    }`}
+                    ${isActive ? "text-ink after:w-full" : "text-ink-soft hover:text-ink after:w-0 hover:after:w-full"}`}
                 >
                   {link.label}
                 </a>
               );
             })}
           </div>
+          {/* CTA desktop */}
           <a
             href="#cta-final"
-            className="group btn-shine inline-flex items-center gap-2 text-[13px] font-semibold px-5 py-2.5 rounded-full bg-primary text-primary-foreground hover:bg-primary-glow transition-all duration-300 hover:shadow-green"
+            className="hidden md:inline-flex group btn-shine items-center gap-2 text-[14px] font-semibold px-7 py-3.5 rounded-full bg-primary text-white hover:bg-primary-glow transition-all duration-300 hover:shadow-green"
           >
             Fazer Diagnóstico
           </a>
+          {/* Hambúrguer mobile */}
+          <button
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-ink-soft hover:text-ink transition-colors"
+            aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen(o => !o)}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </nav>
 
+      {/* ── Menu mobile overlay ── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease }}
+            className="fixed inset-x-0 top-[68px] z-40 bg-background/97 backdrop-blur-xl border-b border-border/40 shadow-lg md:hidden"
+          >
+            <div className="flex flex-col px-6 py-6 gap-1">
+              {[
+                { href: "#como-funciona", label: "Como Funciona" },
+                { href: "#solucao",       label: "Soluções" },
+                { href: "#cenarios",      label: "Cenários" },
+                { href: "#sobre",         label: "Sobre" },
+                { href: "#faq",           label: "Dúvidas" },
+              ].map(link => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-3 text-[16px] font-medium text-ink-soft hover:text-ink border-b border-border/30 last:border-0 transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="#cta-final"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-4 inline-flex justify-center items-center px-7 py-3.5 rounded-full bg-primary text-white text-[14px] font-semibold"
+              >
+                Fazer Diagnóstico
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Skip link acessibilidade ── */}
+      <a href="#sinais" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg focus:text-sm focus:font-medium">
+        Pular para o conteúdo
+      </a>
+
       {/* ══════════════ 1. HERO + TESE — SCROLLYTELLING ══════════════ */}
-      <div style={{ minHeight: "280vh" }} className="relative">
-      <section className="sticky top-0 h-[100svh] overflow-hidden flex items-center pt-[68px]">
+      <div style={{ minHeight: isMobile || prefersReduced ? "100svh" : "440vh" }} className="relative bg-background">
+      <section className="sticky top-0 h-[100svh] overflow-hidden flex items-center pt-[68px] bg-background">
 
         {/* Backgrounds */}
         <div className="absolute inset-0 pointer-events-none hidden lg:block">
@@ -238,39 +322,53 @@ export default function Index() {
         {/* Iceberg — começa direita/pequeno, cresce e centraliza no scroll */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          style={{ x: iceX, scale: iceScale, y: iceY, opacity: iceOpacity }}
+          style={isMobile || prefersReduced
+            ? { y: "-12%", scale: 1.15, opacity: 0.78 }
+            : { x: iceX, scale: iceScale, y: iceY, opacity: iceOpacity }
+          }
         >
           <motion.img
             src={icebergImg}
             alt=""
             aria-hidden="true"
-            className="w-full max-w-[600px] object-contain select-none"
-            style={{
-              filter: "blur(1.5px)",
-              maskImage: "radial-gradient(ellipse 88% 90% at 52% 50%, black 0%, black 68%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.1) 90%, transparent 96%)",
-              WebkitMaskImage: "radial-gradient(ellipse 88% 90% at 52% 50%, black 0%, black 68%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.1) 90%, transparent 96%)",
-            }}
+            className="w-full max-w-[640px] object-contain select-none"
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
             draggable={false}
           />
         </motion.div>
 
+        {/* Vinheta fixa no viewport — não escala com o iceberg */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none z-[5]"
+          style={{
+            background: isMobile
+              ? [
+                  "radial-gradient(ellipse 90% 55% at 50% 36%, transparent 0%, transparent 35%, rgba(247,248,247,0.25) 52%, rgba(247,248,247,0.55) 65%, transparent 80%)",
+                  "linear-gradient(to bottom, transparent 0%, transparent 42%, rgba(247,248,247,0.82) 62%, #F7F8F7 78%)",
+                ].join(", ")
+              : "radial-gradient(ellipse 72% 68% at 50% 50%, transparent 0%, transparent 50%, rgba(247,248,247,0.5) 64%, rgba(247,248,247,0.88) 77%, #F7F8F7 88%)",
+          }}
+        />
+
         {/* ── FASE 1: Hero text (fades out ao scrollar) ── */}
         <motion.div
-          className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-10 pt-6 pb-4"
-          style={{ opacity: heroOpacity }}
+          className={`z-10 w-full max-w-7xl mx-auto px-6 lg:px-10 ${
+            isMobile ? "absolute bottom-0 left-0 right-0 pb-12" : "relative pt-6 pb-4"
+          }`}
+          style={{ opacity: isMobile ? 1 : heroOpacity }}
         >
           <motion.div
             initial="hidden"
             animate="visible"
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } } }}
           >
-            <h1 className="text-[clamp(2.2rem,5.5vw,4.2rem)] leading-[0.96] font-semibold tracking-tight text-balance max-w-[600px]">
+            <h1 className="text-[clamp(1.85rem,5.5vw,4.2rem)] leading-[1.0] md:leading-[0.96] font-semibold tracking-tight text-balance max-w-[600px]">
               {[
                 <span key="l1">Sua empresa cresceu,</span>,
                 <span key="l2" className="block font-serif italic font-normal text-ink/80 mt-1">
-                  mas a operação começou a cobrar o preço.
+                  mas a operação começou a cobrar o preço
                 </span>,
               ].map((line, i) => (
                 <motion.span
@@ -286,113 +384,120 @@ export default function Index() {
               ))}
             </h1>
 
-            <motion.p variants={fadeUp} className="mt-8 max-w-[480px] text-[17px] text-ink-soft leading-[1.85]">
-              Crescimento deveria trazer clareza.{" "}
+            <motion.p variants={fadeUp} className="mt-5 md:mt-8 max-w-[480px] text-[15px] md:text-[17px] text-ink-soft leading-[1.75] md:leading-[1.85]">
+              Crescimento deveria trazer clareza,{" "}
               <span className="text-ink font-medium">
-                Não mais dependência, urgências e retrabalho.
+                não mais dependência, urgências e retrabalho
               </span>
             </motion.p>
 
-            <motion.div variants={fadeUp} className="mt-9 flex flex-col sm:flex-row gap-4 items-start">
-              <div className="relative inline-flex">
-                {!prefersReduced && (
-                  <motion.span
-                    aria-hidden="true"
-                    className="absolute inset-0 rounded-full bg-primary"
-                    animate={{ scale: [1, 1.35, 1.35], opacity: [0.35, 0, 0] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-                  />
-                )}
-                  <motion.a
-                    href="#cta-final"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="group btn-shine relative inline-flex items-center gap-2.5 bg-primary text-primary-foreground px-7 py-3.5 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow"
-                  >
-                    Fazer Diagnóstico
-                  </motion.a>
-                </div>
-              </motion.div>
+            <motion.div variants={fadeUp} className="mt-6 md:mt-9">
+              <motion.a
+                href="#cta-final"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-7 py-3.5 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow"
+              >
+                Fazer Diagnóstico
+              </motion.a>
+            </motion.div>
 
           </motion.div>
         </motion.div>
 
-        {/* ── FASE 2: TESE overlay (fades in ao scrollar) ── */}
-        {/* Ambos os blocos lado DIREITO:
-            ▲ sintomas — canto superior direito (ponta do iceberg)
-            ▼ estruturas — canto inferior direito (parte submersa)  */}
+        {/* ── FASE 2b: "O que a maioria vê" — aparece no 2º scroll ── */}
         <motion.div
-          className="absolute inset-0 z-10 flex flex-col justify-between pointer-events-none"
-          style={{ opacity: teseOpacity, y: teseY }}
+          className="absolute inset-0 z-10 flex-col justify-start pointer-events-none hidden md:flex"
+          style={{ opacity: maioriaOpacity, y: maioriaY }}
         >
-          {/* ▲ SUPERIOR DIREITO — O que a maioria vê */}
-          <div className="w-full max-w-[940px] mx-auto px-6 pt-[160px] flex justify-end">
-            <div className="max-w-[300px] text-right">
-              <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/40 mb-4">
-                O que a maioria vê
-              </p>
-              <h2 className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-ink/70 text-balance">
-                Empresas enxergam{" "}
-                <span className="font-serif italic font-normal">sintomas.</span>
-              </h2>
-              <ul className="mt-4 space-y-1.5 text-[13px] text-ink-soft/55">
-                {["Urgências constantes", "Gargalos visíveis", "Retrabalho frequente"].map(s => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* ▼ INFERIOR DIREITO — O que a FeelFlow mapeia */}
-          <div className="w-full max-w-[940px] mx-auto px-6 pb-14 flex justify-end">
-            <div className="max-w-[300px] text-right">
-              <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/60 mb-4">
-                O que a FeelFlow mapeia
-              </p>
-              <h2 className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-balance">
-                A FeelFlow enxerga{" "}
-                <span className="font-serif italic font-normal text-primary-deep">estruturas.</span>
-              </h2>
-              <ul className="mt-4 space-y-1.5 text-[13px] text-ink-soft">
-                {["Processos que sustentam o problema", "Decisões que criam dependência", "Automações que eliminam o retrabalho"].map(s => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
+          <div className="w-full max-w-[1140px] mx-auto px-6 pt-[100px] flex justify-start">
+            <div className="max-w-[300px] text-left ml-8 lg:ml-14">
+              {showMaioria && (
+                <>
+                  <motion.p
+                    className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/70 mb-4"
+                    initial="hidden" animate="visible"
+                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+                  >
+                    {"O que a maioria vê".split("").map((char, i) => (
+                      <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
+                    ))}
+                  </motion.p>
+                  <p className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-ink/90">
+                    <motion.span
+                      initial="hidden" animate="visible"
+                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.6 } } }}
+                    >
+                      {"Empresas enxergam sintomas".split("").map((char, i) => (
+                        <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.08 } } }}>{char}</motion.span>
+                      ))}
+                      <motion.span
+                        className="inline-block w-[2px] h-[1em] bg-primary align-middle ml-0.5"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 1, 0, 1] }}
+                        transition={{ duration: 0.9, repeat: Infinity, delay: 3.0 }}
+                      />
+                    </motion.span>
+                  </p>
+                  <motion.ul
+                    className="mt-4 space-y-1.5 text-[13px] text-ink-soft/80"
+                    initial="hidden" animate="visible"
+                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.2 } } }}
+                  >
+                    {["Urgências constantes", "Gargalos visíveis", "Retrabalho frequente"].map(s => (
+                      <motion.li key={s} variants={{ hidden: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}>{s}</motion.li>
+                    ))}
+                  </motion.ul>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
 
-        {/* ── FASE 3: Frase de fechamento — typing animation, lado esquerdo ── */}
+        {/* ── FASE 2c: "O que a FeelFlow mapeia" — aparece no 3º scroll ── */}
         <motion.div
-          className="absolute inset-0 z-10 flex items-end pointer-events-none"
-          style={{ opacity: teseOpacity }}
+          className="absolute inset-0 z-10 flex-col justify-end pointer-events-none hidden md:flex"
+          style={{ opacity: feelOpacity, y: feelY }}
         >
-          <div className="w-full max-w-7xl mx-auto px-6 lg:px-10 pb-16">
-            <div className="max-w-[420px]">
-              {showTyping && (
-                <motion.p
-                  className="text-[clamp(1rem,2vw,1.25rem)] font-serif italic font-normal text-ink/60 leading-[1.5]"
-                  initial="hidden"
-                  animate="visible"
-                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.03 } } }}
-                >
-                  {`"O problema raramente começa onde ele aparece."`.split("").map((char, i) => (
+          <div className="w-full max-w-[1140px] mx-auto px-6 pb-14 flex justify-end">
+            <div className="max-w-[300px] text-right mr-8 lg:mr-14">
+              {showFeel && (
+                <>
+                  <motion.p
+                    className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep mb-4"
+                    initial="hidden" animate="visible"
+                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+                  >
+                    {"O que a FeelFlow mapeia".split("").map((char, i) => (
+                      <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
+                    ))}
+                  </motion.p>
+                  <p className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-ink">
                     <motion.span
-                      key={i}
-                      variants={{
-                        hidden:  { opacity: 0 },
-                        visible: { opacity: 1, transition: { duration: 0.08 } },
-                      }}
+                      initial="hidden" animate="visible"
+                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.8 } } }}
                     >
-                      {char}
+                      {"A FeelFlow enxerga estruturas".split("").map((char, i) => (
+                        <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.08 } } }}>{char}</motion.span>
+                      ))}
+                      <motion.span
+                        className="inline-block w-[2px] h-[1em] bg-primary align-middle ml-0.5"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 1, 0, 1] }}
+                        transition={{ duration: 0.9, repeat: Infinity, delay: 3.5 }}
+                      />
                     </motion.span>
-                  ))}
-                  <motion.span
-                    className="inline-block w-[2px] h-[1.1em] bg-primary align-middle ml-0.5"
-                    animate={{ opacity: [1, 0, 1] }}
-                    transition={{ duration: 0.9, repeat: Infinity }}
-                  />
-                </motion.p>
+                  </p>
+                  <motion.ul
+                    className="mt-4 space-y-1.5 text-[13px] text-ink-soft"
+                    initial="hidden" animate="visible"
+                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.5 } } }}
+                  >
+                    {["Processos que sustentam o problema", "Decisões que criam dependência", "Automações que eliminam o retrabalho"].map(s => (
+                      <motion.li key={s} variants={{ hidden: { opacity: 0, x: 8 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}>{s}</motion.li>
+                    ))}
+                  </motion.ul>
+                </>
               )}
             </div>
           </div>
@@ -413,6 +518,77 @@ export default function Index() {
         </motion.div>
 
       </section>
+      </div>
+
+      {/* ══════════════ 1B. TESE — MOBILE ONLY ══════════════ */}
+      <div className="md:hidden bg-background px-6 pt-10 pb-16">
+        <div className="space-y-4">
+
+          {/* Card: O que a maioria vê */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 0.7, ease }}
+            className="relative p-6 rounded-2xl bg-secondary/60 border border-border/40 overflow-hidden"
+          >
+            {/* Subtle top accent */}
+            <div className="absolute top-0 left-6 right-6 h-px bg-border/60" />
+            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/55 mb-3">
+              O que a maioria vê
+            </p>
+            <p className="text-[1.45rem] font-semibold leading-[1.1] tracking-tight text-ink/90 mb-5">
+              Empresas enxergam{" "}
+              <span className="font-serif italic font-normal">sintomas</span>
+            </p>
+            <ul className="space-y-2.5">
+              {["Urgências constantes", "Gargalos visíveis", "Retrabalho frequente"].map(s => (
+                <li key={s} className="flex items-center gap-2.5 text-[13px] text-ink-soft">
+                  <span className="w-1.5 h-1.5 rounded-full bg-ink-soft/30 shrink-0" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Connector arrow */}
+          <div className="flex justify-center py-1">
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-px h-5 bg-gradient-to-b from-border to-primary/40" />
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none" className="text-primary/60">
+                <path d="M6 8L0 0h12L6 8z" fill="currentColor"/>
+              </svg>
+            </div>
+          </div>
+
+          {/* Card: O que a FeelFlow mapeia */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 0.7, ease, delay: 0.12 }}
+            className="relative p-6 rounded-2xl bg-primary/[0.07] border border-primary/20 overflow-hidden"
+          >
+            {/* Green top accent */}
+            <div className="absolute top-0 left-6 right-6 h-px bg-primary/30" />
+            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-primary-deep mb-3">
+              O que a FeelFlow mapeia
+            </p>
+            <p className="text-[1.45rem] font-semibold leading-[1.1] tracking-tight text-ink mb-5">
+              A FeelFlow enxerga{" "}
+              <span className="font-serif italic font-normal text-primary-deep">estruturas</span>
+            </p>
+            <ul className="space-y-2.5">
+              {["Processos que sustentam o problema", "Decisões que criam dependência", "Automações que eliminam o retrabalho"].map(s => (
+                <li key={s} className="flex items-start gap-2.5 text-[13px] text-ink-soft">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+        </div>
       </div>
 
       <Rule />
@@ -488,7 +664,7 @@ export default function Index() {
             </motion.p>
 
             {/* 3 stats — impacto tipográfico com counter animado */}
-            <div className="grid lg:grid-cols-3 border-t border-background/10">
+            <div className="grid md:grid-cols-3 border-t border-background/10">
               {[
                 {
                   counter: <AnimatedNumber to={70} suffix="%" />,
@@ -512,7 +688,7 @@ export default function Index() {
                   <p className="text-[clamp(3.2rem,6vw,5.5rem)] font-semibold leading-none tracking-tight text-background tabular-nums">
                     {item.counter}
                   </p>
-                  <p className="text-[13px] text-background/40 leading-[1.75] max-w-xs">
+                  <p className="text-[13px] text-background/70 leading-[1.75] max-w-xs">
                     {item.text}
                   </p>
                 </motion.div>
@@ -577,23 +753,23 @@ export default function Index() {
               </h2>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 mb-14">
+            <motion.div variants={fadeUp} className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-14">
               {[
-                { icon: "⚙️", label: "Estruturação operacional" },
-                { icon: "⚡", label: "Automações" },
-                { icon: "🖥️", label: "Sistemas internos" },
-                { icon: "📊", label: "CRM personalizado" },
-                { icon: "🔗", label: "Integrações" },
-                { icon: "🤖", label: "Agentes inteligentes" },
-                { icon: "📈", label: "Dashboards" },
-                { icon: "🔄", label: "Fluxos comerciais" },
-                { icon: "🏢", label: "Centrais operacionais" },
+                { icon: <Settings className="w-4 h-4" />, label: "Estruturação operacional" },
+                { icon: <Zap className="w-4 h-4" />, label: "Automações" },
+                { icon: <Monitor className="w-4 h-4" />, label: "Sistemas internos" },
+                { icon: <BarChart2 className="w-4 h-4" />, label: "CRM personalizado" },
+                { icon: <Link2 className="w-4 h-4" />, label: "Integrações" },
+                { icon: <Bot className="w-4 h-4" />, label: "Agentes inteligentes" },
+                { icon: <TrendingUp className="w-4 h-4" />, label: "Dashboards" },
+                { icon: <RefreshCw className="w-4 h-4" />, label: "Fluxos comerciais" },
+                { icon: <Building2 className="w-4 h-4" />, label: "Centrais operacionais" },
               ].map((item) => (
                 <div
                   key={item.label}
                   className="flex items-center gap-3 px-5 py-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:bg-primary/[0.03] transition-all duration-200 group card-hover"
                 >
-                  <span className="text-[18px] shrink-0">{item.icon}</span>
+                  <span className="text-primary/60 shrink-0 group-hover:text-primary transition-colors">{item.icon}</span>
                   <span className="text-[14px] font-medium text-ink/75 leading-snug">{item.label}</span>
                 </div>
               ))}
@@ -644,8 +820,8 @@ export default function Index() {
                 },
                 {
                   area: "Gestão",
-                  antes: ["decisões no feeling"],
-                  depois: ["indicadores claros", "acompanhamento real"],
+                  antes: ["decisões no feeling", "sem indicadores definidos", "acompanhamento informal"],
+                  depois: ["indicadores claros", "acompanhamento real", "decisões baseadas em dados"],
                 },
               ].map((c) => (
                 <div key={c.area} className="rounded-2xl border border-border/50 overflow-hidden bg-background shadow-soft">
@@ -835,9 +1011,9 @@ export default function Index() {
         viewport={{ once: true, margin: "-80px" }}
         variants={stagger}
       >
-        {/* Foto — invade levemente o lado do texto */}
+        {/* Foto — desktop: absoluta direita; mobile: oculta */}
         <motion.div
-          className="absolute right-0 top-0 bottom-0 w-[68%] z-0"
+          className="hidden md:block absolute right-0 top-0 bottom-0 w-[68%] z-0"
           variants={{
             hidden:  { clipPath: "inset(0 0 100% 0)" },
             visible: { clipPath: "inset(0 0 0% 0)", transition: { duration: 1.8, ease: [0.22, 1, 0.36, 1] } },
@@ -845,8 +1021,7 @@ export default function Index() {
         >
           <img
             src={leticiaPhoto}
-            alt=""
-            aria-hidden="true"
+            alt="Letícia Feitoza, fundadora da FeelFlow"
             className="w-full h-full object-cover object-[center_22%]"
           />
           {/* Fade esquerda — suave, sem linha visível */}
@@ -939,33 +1114,33 @@ export default function Index() {
             </motion.div>
 
             <motion.div variants={fadeIn}>
-              <FaqItem
+              <FaqItem id="1"
                 q="Minha empresa ainda é pequena para pensar nisso?"
-                a={`Não. Quando processos começam a depender de pessoas, urgências aumentam e a operação passa a consumir mais energia do que deveria, normalmente já existem sinais suficientes para organizar a base.`}
+                a={`Quando processos começam a depender de pessoas-chave, urgências aumentam e a operação passa a consumir mais energia do que deveria. Já existem sinais suficientes para organizar a base.`}
               />
-              <FaqItem
+              <FaqItem id="2"
                 q="Vou precisar parar a operação para implementar mudanças?"
-                a={`Não. As melhorias acontecem respeitando a realidade da empresa e entram aos poucos no fluxo da operação.`}
+                a={`As melhorias acontecem dentro da realidade da empresa, respeitando a rotina da equipe. Nada é implementado de forma abrupta.`}
               />
-              <FaqItem
+              <FaqItem id="3"
                 q="Isso vai criar mais burocracia?"
-                a={`Não. O objetivo é simplificar, reduzir ruído e fazer a operação funcionar de forma mais leve.`}
+                a={`O objetivo é o oposto. Estrutura bem desenhada elimina redundâncias, reduz ruído e faz a operação funcionar com menos esforço, não mais.`}
               />
-              <FaqItem
+              <FaqItem id="4"
                 q="Vocês chegam com processos prontos?"
-                a={`Não. Cada empresa já possui uma dinâmica, pessoas e desafios diferentes.\n\nA construção acontece junto das lideranças para criar algo que faça sentido no dia a dia e que a equipe realmente consiga aplicar.`}
+                a={`Não. Cada empresa tem uma dinâmica, pessoas e desafios diferentes.\n\nA construção acontece junto das lideranças para criar algo que faça sentido no dia a dia e que a equipe realmente consiga aplicar.`}
               />
-              <FaqItem
+              <FaqItem id="5"
                 q="E tecnologia? Vou precisar mudar tudo?"
-                a={`Não necessariamente. Tecnologia entra quando faz sentido.\n\nPrimeiro a operação precisa estar clara. Depois avaliamos onde automações e ferramentas realmente ajudam.`}
+                a={`Não necessariamente. Tecnologia entra quando faz sentido.\n\nPrimeiro a operação precisa estar clara. Depois avaliamos onde automações e ferramentas realmente ajudam, sem trocar o que funciona.`}
               />
-              <FaqItem
+              <FaqItem id="6"
                 q="Eu já sei exatamente o que está errado. Ainda faz sentido conversar?"
-                a={`Sim. Muitas empresas já sabem o que precisa melhorar.\n\nO desafio normalmente está em transformar esses sinais de modo estruturado e consistente.`}
+                a={`Sim. Muitas empresas já sabem o que precisa melhorar.\n\nO desafio está em transformar esse diagnóstico em mudanças estruturadas, sem travar a operação no processo.`}
               />
-              <FaqItem
+              <FaqItem id="7"
                 q="Quanto tempo leva?"
-                a={`Depende do momento da empresa e do que precisa ser estruturado.\n\nMas a proposta nunca é criar projetos longos e pesados.`}
+                a={`Depende do momento da empresa e do que precisa ser estruturado.\n\nA proposta é sempre trabalhar em ciclos curtos, entregando valor antes de avançar para a próxima etapa.`}
               />
             </motion.div>
           </motion.div>
@@ -996,24 +1171,16 @@ export default function Index() {
             </motion.h2>
 
             <motion.p variants={fadeUp} className="mt-6 text-[17px] text-ink-soft leading-[1.75] max-w-lg">
-              Descubra onde a operação está travando hoje.
+              Identifique o que está consumindo energia da sua operação, antes que vire um problema maior.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-10 flex flex-col items-start gap-4">
               <div className="relative inline-flex">
-                {!prefersReduced && (
-                  <motion.span
-                    aria-hidden="true"
-                    className="absolute inset-0 rounded-full bg-primary"
-                    animate={{ scale: [1, 1.4, 1.4], opacity: [0.35, 0, 0] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-                  />
-                )}
                 <motion.a
-                  href={import.meta.env.VITE_QUIZ_URL || "http://localhost:3016"}
+                  href={import.meta.env.VITE_QUIZ_URL || "https://wa.me/5511954388833"}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="group btn-shine relative inline-flex items-center gap-2.5 bg-primary text-primary-foreground px-8 py-4 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-flow"
+                  className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-7 py-3.5 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-flow"
                 >
                   Fazer Diagnóstico
                 </motion.a>
@@ -1027,14 +1194,13 @@ export default function Index() {
       </section>
 
       {/* ══════════════ FOOTER ══════════════ */}
-      <footer className="border-t border-border/40 py-6 px-6 lg:px-10 bg-background">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <img src={logo} alt="FeelFlow" className="h-12 w-auto opacity-70" style={{ transform: "scale(1.5)", transformOrigin: "left center" }} />
-          <div className="flex items-center gap-4 text-[12px] text-ink-soft/50 pr-20">
-            <span className="font-mono uppercase tracking-widest">Inteligência Operacional</span>
-            <span className="text-border">|</span>
-            <span>© {new Date().getFullYear()} FeelFlow</span>
-          </div>
+      <footer className="border-t border-border/40 py-10 px-6 lg:px-10 bg-background">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-[12px] text-ink-soft/50">
+          <span className="font-mono uppercase tracking-widest">Inteligência Operacional</span>
+          <span className="hidden sm:inline text-border">|</span>
+          <a href="mailto:contato@feelflow.com.br" className="hover:text-ink-soft transition-colors">contato@feelflow.com.br</a>
+          <span className="hidden sm:inline text-border">|</span>
+          <span>© {new Date().getFullYear()} FeelFlow</span>
         </div>
       </footer>
 
@@ -1043,7 +1209,7 @@ export default function Index() {
         href="https://wa.me/5511954388833"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Fale pelo WhatsApp"
+        aria-label="Fale pelo WhatsApp (abre em nova aba)"
         className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-lg hover:scale-110 transition-transform duration-300"
         style={{ backgroundColor: "#25D366" }}
       >
