@@ -19,9 +19,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* v2 — Marketing de Desejo (para comparação com o board) */}
-          <Route path="/v2" element={<IndexDesejo />} />
+          {/* Principal — Marketing de Desejo (versão de produção) */}
+          <Route path="/" element={<IndexDesejo />} />
+          {/* v1 — versão original preservada */}
+          <Route path="/v1" element={<Index />} />
           {/* v3 — Experimento de Hero Dark Premium + Spline 3D */}
           <Route path="/v3" element={<IndexDark />} />
           {/* Mergulho Operacional — página de captura qualificada */}
