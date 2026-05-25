@@ -17,6 +17,13 @@ import { ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
 const CRM_API =
   import.meta.env.VITE_CRM_API_URL ?? "http://localhost:3000";
 
+// ─── Meta Pixel ────────────────────────────────────────────────────────────────
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 interface FormData {
   // Step 1
@@ -142,6 +149,7 @@ export default function Mergulho() {
   const [form, setForm]         = useState<FormData>(EMPTY);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
+  const [showObs, setShowObs]   = useState(false);
 
   const set = (field: keyof FormData, value: string | string[]) =>
     setForm(prev => ({ ...prev, [field]: value }));
@@ -182,6 +190,14 @@ export default function Mergulho() {
       }
 
       setStep("done");
+
+      // Meta Pixel — dispara Lead quando o formulário é submetido com sucesso
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        window.fbq("track", "Lead", {
+          content_category: "Mergulho Operacional",
+          content_name: "Formulario de Qualificacao",
+        });
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Erro inesperado. Tente novamente.");
     } finally {
@@ -348,20 +364,35 @@ export default function Mergulho() {
                   ))}
                 </div>
 
-                {/* Campo livre */}
+                {/* Campo livre — colapsado por padrão */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] font-semibold text-ink/60 uppercase tracking-wide">
-                    Quer contar mais alguma coisa? <span className="text-ink/30 font-normal normal-case">(opcional)</span>
-                  </label>
-                  <textarea
-                    value={form.observacaoLivre}
-                    onChange={e => set("observacaoLivre", e.target.value)}
-                    maxLength={300}
-                    rows={3}
-                    placeholder="Quanto mais contexto, melhor o diagnóstico."
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-white text-ink text-[14px] placeholder:text-ink/30 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200"
-                  />
-                  <p className="text-[11px] text-ink/30 text-right">{form.observacaoLivre.length}/300</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowObs(v => !v)}
+                    className="flex items-center gap-1.5 text-[12px] font-semibold text-ink/40 uppercase tracking-wide hover:text-ink/60 transition-colors duration-200 w-fit"
+                  >
+                    <span>{showObs ? "Ocultar campo" : "Quer contar mais alguma coisa?"}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showObs ? "rotate-180" : ""}`} />
+                    {!showObs && <span className="font-normal normal-case text-ink/30 ml-0.5">(opcional)</span>}
+                  </button>
+                  {showObs && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.18 }}
+                      className="flex flex-col gap-1"
+                    >
+                      <textarea
+                        value={form.observacaoLivre}
+                        onChange={e => set("observacaoLivre", e.target.value)}
+                        maxLength={300}
+                        rows={3}
+                        placeholder="Quanto mais contexto, melhor o diagnóstico."
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-white text-ink text-[14px] placeholder:text-ink/30 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200"
+                      />
+                      <p className="text-[11px] text-ink/30 text-right">{form.observacaoLivre.length}/300</p>
+                    </motion.div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
@@ -480,7 +511,7 @@ export default function Mergulho() {
                     Seu Mergulho começa agora.
                   </h2>
                   <p className="text-[15px] text-ink-soft leading-relaxed max-w-[340px] mx-auto">
-                    Recebemos tudo. Em até 2 horas, alguém do nosso time entra em contato
+                    Recebemos tudo. Em até 1 dia útil, alguém do nosso time entra em contato
                     pelo <strong className="text-ink">{
                       form.preferenciaContato === "whatsapp" ? "WhatsApp" :
                       form.preferenciaContato === "email" ? "e-mail" : "telefone"
