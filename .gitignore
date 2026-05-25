@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
+.env
+.env.*
+!.env.example
+.claude/
+*.mp4
+*.pdf
