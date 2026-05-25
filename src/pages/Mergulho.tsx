@@ -11,7 +11,7 @@
 import { useState } from "react";
 import logo from "@/assets/Horizontal_2.png";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, ChevronDown, Check, Loader2 } from "lucide-react";
 
 // ─── API base ──────────────────────────────────────────────────────────────────
 const CRM_API =
