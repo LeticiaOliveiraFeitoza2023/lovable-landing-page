@@ -20,7 +20,7 @@
 import { useState, useEffect, useRef } from "react";
 import logo from "@/assets/Horizontal_2.png";
 import leticiaPhoto from "@/assets/leticia.jpg";
-import icebergImg from "@/assets/iceberg.jpeg";
+import { HeroSpline3D } from "@/components/HeroSpline3D";
 import { ChevronDown, Settings, Zap, Monitor, BarChart2, Link2, Bot, TrendingUp, RefreshCw, Building2 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
@@ -284,21 +284,15 @@ export default function IndexDesejo() {
           />
         </motion.div>
 
-        {/* Iceberg — aparece no scroll, invisível no estado inicial */}
+        {/* Iceberg 3D — aparece no scroll, invisível no estado inicial */}
         <motion.div
           className="absolute inset-0 pointer-events-none overflow-hidden z-[2]"
           style={isMobile || prefersReduced
             ? { opacity: 0 }
-            : { x: iceX, scale: iceScale, y: iceY, opacity: iceOpacity, filter: iceBlurFilter, mixBlendMode: "multiply" }
+            : { x: iceX, scale: iceScale, y: iceY, opacity: iceOpacity, filter: iceBlurFilter }
           }
         >
-          <motion.img
-            src={icebergImg}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-contain object-center select-none"
-            draggable={false}
-          />
+          <HeroSpline3D darkMode={false} />
         </motion.div>
 
         {/* Vinheta */}
