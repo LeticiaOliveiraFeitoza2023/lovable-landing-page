@@ -73,20 +73,14 @@ export function HeroSpline3D({ darkMode = false, className = "" }: HeroSpline3DP
         />
       </div>
 
-      {/* Vinheta light mode — oval radial, sem bordas visíveis */}
+      {/* Vinheta light mode — oval suave sem cor sólida nas bordas */}
       {!darkMode && (
         <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none z-10"
           style={{
-            background: [
-              /* Máscara oval principal — funde todos os lados suavemente */
-              "radial-gradient(ellipse 88% 80% at 50% 48%, transparent 30%, rgba(242,248,246,0.25) 52%, rgba(238,246,244,0.65) 68%, #F7F8F7 85%)",
-              /* Reforço no topo para colar no header */
-              "linear-gradient(to bottom, #F7F8F7 0%, transparent 16%)",
-              /* Reforço na base para fundir com próxima seção */
-              "linear-gradient(to top, #F7F8F7 0%, transparent 20%)",
-            ].join(", "),
+            background:
+              "radial-gradient(ellipse 92% 85% at 50% 50%, transparent 38%, rgba(220,240,235,0.18) 58%, rgba(210,235,228,0.42) 76%, rgba(200,230,220,0.68) 90%)",
           }}
         />
       )}

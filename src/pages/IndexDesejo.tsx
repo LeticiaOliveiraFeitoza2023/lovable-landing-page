@@ -198,6 +198,9 @@ export default function IndexDesejo() {
   const rawFeelY       = useTransform(scrollY, [HERO_TOTAL * 0.58, HERO_TOTAL * 0.72], [36, 0]);
   const feelY          = useSpring(rawFeelY, { stiffness: 28, damping: 30 });
 
+  /* Fade de saída — só aparece quando a seção está chegando ao fim */
+  const exitFadeOpacity = useTransform(scrollY, [HERO_EXTENDED * 0.82, HERO_EXTENDED * 0.97], [0, 1]);
+
   useMotionValueEvent(maioriaOpacity, "change", (v) => {
     if (v > 0.5 && !showMaioria) setShowMaioria(true);
     if (v < 0.15) setShowMaioria(false);
@@ -263,13 +266,12 @@ export default function IndexDesejo() {
         style={{
           background: [
             "linear-gradient(to bottom,",
-            "  #F7F8F7 0%,",
-            "  #eaf5f1 18%,",
-            "  #c8ebe2 36%,",
-            "  #8fd4c8 48%,",
-            "  #4db8aa 56%,",
-            "  #1f9284 68%,",
-            "  #0d6e66 82%,",
+            "  #eaf5f1 0%,",
+            "  #c8ebe2 22%,",
+            "  #8fd4c8 40%,",
+            "  #4db8aa 54%,",
+            "  #1f9284 66%,",
+            "  #0d6e66 80%,",
             "  #074f49 100%",
             ")",
           ].join(""),
@@ -311,22 +313,7 @@ export default function IndexDesejo() {
           <HeroSpline3D darkMode={false} />
         </motion.div>
 
-        {/* Vinheta */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none z-[5]"
-          style={{
-            background: isMobile
-              ? [
-                  "radial-gradient(ellipse 90% 55% at 50% 36%, transparent 0%, transparent 35%, rgba(247,248,247,0.25) 52%, rgba(247,248,247,0.55) 65%, transparent 80%)",
-                  "linear-gradient(to bottom, transparent 0%, transparent 42%, rgba(247,248,247,0.82) 62%, #F7F8F7 78%)",
-                ].join(", ")
-              : [
-                  "linear-gradient(to right, #F7F8F7 0%, transparent 9%, transparent 91%, #F7F8F7 100%)",
-                  "linear-gradient(to bottom, #F7F8F7 0%, transparent 13%, transparent 76%, #F7F8F7 100%)",
-                ].join(", "),
-          }}
-        />
+        {/* Sem vinheta lateral — teal full-bleed em todas as fases */}
 
         {/* Hero text — centralizado */}
         <motion.div
@@ -459,7 +446,7 @@ export default function IndexDesejo() {
               {showFeel && (
                 <>
                   <motion.p
-                    className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep mb-4"
+                    className="text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200/80 mb-4"
                     initial="hidden" animate="visible"
                     variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
                   >
@@ -467,7 +454,7 @@ export default function IndexDesejo() {
                       <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
                     ))}
                   </motion.p>
-                  <p className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-ink">
+                  <p className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-white">
                     <motion.span
                       initial="hidden" animate="visible"
                       variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.8 } } }}
@@ -484,7 +471,7 @@ export default function IndexDesejo() {
                     </motion.span>
                   </p>
                   <motion.ul
-                    className="mt-4 space-y-1.5 text-[13px] text-ink-soft"
+                    className="mt-4 space-y-1.5 text-[13px] text-white/70"
                     initial="hidden" animate="visible"
                     variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.5 } } }}
                   >
@@ -495,7 +482,7 @@ export default function IndexDesejo() {
 
                   {/* MUDANÇA 3 — Metáfora nomeada explicitamente */}
                   <motion.p
-                    className="mt-6 text-[11px] font-mono text-primary-deep/60 tracking-wide"
+                    className="mt-6 text-[11px] font-mono text-white/40 tracking-wide"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 4.5, duration: 1 }}
@@ -507,6 +494,17 @@ export default function IndexDesejo() {
             </div>
           </div>
         </motion.div>
+
+        {/* Fade-out inferior — dissolve o teal escuro antes da próxima seção */}
+        <motion.div
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 pointer-events-none z-[3]"
+          style={{
+            opacity: exitFadeOpacity,
+            height: "160px",
+            background: "linear-gradient(to bottom, transparent 0%, rgba(7,79,73,0.0) 20%, rgba(247,248,247,0.55) 70%, #F7F8F7 100%)",
+          }}
+        />
 
         {/* Scroll indicator */}
         <motion.div
