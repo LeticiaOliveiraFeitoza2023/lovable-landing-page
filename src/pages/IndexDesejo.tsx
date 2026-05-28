@@ -852,35 +852,134 @@ export default function IndexDesejo() {
               </h2>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-14">
-              {[
-                { icon: <Settings className="w-4 h-4" />,  label: "Operação que funciona sem você" },
-                { icon: <Zap className="w-4 h-4" />,       label: "Equipe focada no que importa" },
-                { icon: <Monitor className="w-4 h-4" />,   label: "Informação centralizada e acessível" },
-                { icon: <BarChart2 className="w-4 h-4" />, label: "Nenhum lead se perde" },
-                { icon: <Link2 className="w-4 h-4" />,     label: "Ferramentas que conversam entre si" },
-                { icon: <Bot className="w-4 h-4" />,       label: "IA que trabalha enquanto você decide" },
-                { icon: <TrendingUp className="w-4 h-4" />, label: "Visibilidade total da operação" },
-                { icon: <RefreshCw className="w-4 h-4" />, label: "Comercial com previsibilidade" },
-                { icon: <Building2 className="w-4 h-4" />, label: "Crescimento sem retrabalho" },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-center gap-3 px-5 py-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:bg-primary/[0.03] transition-all duration-200 group card-hover"
-                >
-                  <span className="text-primary/60 shrink-0 group-hover:text-primary transition-colors">{item.icon}</span>
-                  <span className="text-[14px] font-medium text-ink/75 leading-snug">{item.label}</span>
-                </div>
-              ))}
-            </motion.div>
+            {/* ── Bento Grid O que construímos ── */}
+            <motion.div variants={fadeUp}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-            <motion.div variants={fadeUp} className="max-w-xl border-l-2 border-primary/30 pl-6">
-              <p className="text-[15px] text-ink/70 leading-[1.8]">
-                Cada empresa recebe uma combinação diferente.
-              </p>
-              <p className="text-[15px] text-ink/70 leading-[1.8]">
-                A solução nasce da operação, não de um pacote pronto.
-              </p>
+                {/* Card A — Estrutura (dark, wide) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="relative lg:col-span-2 rounded-2xl bg-surface-dark text-background p-8 overflow-hidden"
+                >
+                  <div className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                        <Settings className="w-4 h-4" />
+                      </span>
+                      <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-background/40">Estrutura</p>
+                    </div>
+                    <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-2">
+                      Operação que{" "}
+                      <span className="font-serif italic font-normal text-primary">funciona sem você</span>
+                    </h3>
+                    <p className="text-[13px] text-background/50 mb-7">A base que sustenta o crescimento.</p>
+                    <div className="flex flex-wrap gap-2">
+                      {["Processos padronizados", "Fluxos comerciais", "Centrais operacionais"].map(s => (
+                        <span key={s} className="text-[12px] px-3 py-1.5 rounded-full border border-background/15 text-background/70">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Card B — Automação (tall, row-span-2) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="md:row-span-2 lg:row-span-2 rounded-2xl bg-primary/[0.07] border border-primary/18 p-8 overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary-deep">
+                      <Zap className="w-4 h-4" />
+                    </span>
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/60">Automação + IA</p>
+                  </div>
+                  <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-3">
+                    IA que trabalha{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">enquanto você decide</span>
+                  </h3>
+                  <p className="text-[13px] text-ink-soft leading-relaxed mb-8">
+                    Equipe focada no que importa. Ferramentas que conversam entre si.
+                  </p>
+                  <div className="flex flex-col gap-3 mb-8">
+                    {[
+                      { icon: <Zap className="w-3.5 h-3.5" />, label: "Automações de processo" },
+                      { icon: <Link2 className="w-3.5 h-3.5" />, label: "Integrações entre ferramentas" },
+                      { icon: <Bot className="w-3.5 h-3.5" />, label: "Agentes inteligentes" },
+                    ].map((item, i) => (
+                      <div key={item.label}>
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-background/60 border border-primary/12">
+                          <span className="text-primary/70">{item.icon}</span>
+                          <span className="text-[13px] font-medium text-ink/75">{item.label}</span>
+                        </div>
+                        {i < 2 && <div className="w-px h-3 bg-primary/20 ml-[22px]" />}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Card C — Comercial */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="rounded-2xl bg-background border border-border/50 p-8 shadow-soft overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-ink-soft">
+                      <Monitor className="w-4 h-4" />
+                    </span>
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50">Comercial</p>
+                  </div>
+                  <h3 className="text-[1.3rem] font-semibold leading-tight tracking-tight mb-5">
+                    Nenhum lead se perde
+                  </h3>
+                  <div className="space-y-2.5">
+                    {["CRM com previsibilidade", "Comercial sem retrabalho"].map(s => (
+                      <div key={s} className="flex items-center gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/55 shrink-0" />
+                        <span className="text-[13px] text-ink/70">{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Card D — Dados */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="rounded-2xl bg-secondary/55 border border-border/50 p-8 shadow-soft overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="w-8 h-8 rounded-lg bg-background border border-border/40 flex items-center justify-center text-ink-soft">
+                      <BarChart2 className="w-4 h-4" />
+                    </span>
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50">Dados</p>
+                  </div>
+                  <h3 className="text-[1.3rem] font-semibold leading-tight tracking-tight mb-5">
+                    Visibilidade total
+                  </h3>
+                  <div className="space-y-2.5">
+                    {["Dashboards operacionais", "Crescimento sem retrabalho"].map(s => (
+                      <div key={s} className="flex items-center gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/55 shrink-0" />
+                        <span className="text-[13px] text-ink/70">{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+              </div>
+
+              {/* Quote */}
+              <div className="mt-6 border-l-2 border-primary/30 pl-6 py-1">
+                <p className="text-[15px] text-ink-soft leading-[1.8]">
+                  Cada empresa recebe uma combinação diferente.{" "}
+                  <span className="text-ink/70">A solução nasce da operação, não de um pacote pronto.</span>
+                </p>
+              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -905,52 +1004,142 @@ export default function IndexDesejo() {
               </h2>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="grid md:grid-cols-3 gap-8">
-              {[
-                {
-                  area: "Comercial",
-                  antes: ["CRM atualizado manualmente", "follow-up perdido", "histórico espalhado"],
-                  depois: ["CRM conectado", "tarefas automáticas", "visão em tempo real"],
-                },
-                {
-                  area: "Operação",
-                  antes: ["atividades repetitivas", "equipe sobrecarregada", "retrabalho"],
-                  depois: ["fluxos automatizados", "menos dependência", "mais previsibilidade"],
-                },
-                {
-                  area: "Gestão",
-                  antes: ["decisões no feeling", "sem indicadores definidos", "acompanhamento informal"],
-                  depois: ["indicadores claros", "acompanhamento real", "decisões baseadas em dados"],
-                },
-              ].map((c) => (
-                <div key={c.area} className="rounded-2xl border border-border/50 overflow-hidden bg-background shadow-soft">
-                  <div className="px-6 pt-6 pb-4 border-b border-border/40">
-                    <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-ink-soft/50">{c.area}</span>
+            {/* ── Bento Grid Cenários ── */}
+            <motion.div variants={fadeUp}>
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+                {/* Card 1: Comercial — wide (col-span-3) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="relative lg:col-span-3 rounded-2xl bg-background border border-border/50 p-8 overflow-hidden shadow-soft"
+                >
+                  <div className="absolute inset-x-0 top-0 h-[2px] rounded-t-2xl bg-gradient-to-r from-primary/70 via-primary/30 to-transparent" />
+                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50 mb-5">Comercial</p>
+                  <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-8 max-w-[300px]">
+                    CRM que funciona{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">de verdade</span>
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { antes: "CRM atualizado manualmente", depois: "CRM conectado" },
+                      { antes: "follow-up perdido",           depois: "tarefas automáticas" },
+                      { antes: "histórico espalhado",          depois: "visão em tempo real" },
+                    ].map((item) => (
+                      <div key={item.depois} className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                        <span className="text-[13px] text-ink-soft/38 line-through sm:w-[200px] shrink-0 leading-snug">{item.antes}</span>
+                        <div className="shrink-0 flex items-center gap-1.5">
+                          <div className="w-7 h-px bg-primary/35" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/55" />
+                        </div>
+                        <span className="text-[13px] font-medium text-ink/80 leading-snug">{item.depois}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="p-6 grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-soft/40 mb-3">Antes</p>
-                      <ul className="space-y-2">
-                        {c.antes.map(item => (
-                          <li key={item} className="flex items-start gap-2 text-[13px] text-ink/65 leading-snug">
-                            <span className="mt-1.5 w-1 h-1 rounded-full bg-ink-soft/25 shrink-0" />{item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-primary-deep/60 mb-3">Depois</p>
-                      <ul className="space-y-2">
-                        {c.depois.map(item => (
-                          <li key={item} className="flex items-start gap-2 text-[13px] text-ink leading-snug font-medium">
-                            <span className="mt-1.5 w-1 h-1 rounded-full bg-primary/60 shrink-0" />{item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                </motion.div>
+
+                {/* Card 2: Gestão — tall (col-span-2, row-span-2) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="lg:col-span-2 lg:row-span-2 rounded-2xl bg-primary/[0.06] border border-primary/18 p-8 overflow-hidden"
+                >
+                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/65 mb-5">Gestão</p>
+                  <h3 className="text-[1.55rem] font-semibold leading-tight tracking-tight mb-3">
+                    Decisões com base{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">em dados reais</span>
+                  </h3>
+                  <p className="text-[13px] text-ink-soft leading-relaxed mb-10">
+                    Do feeling para indicadores mensuráveis.
+                  </p>
+
+                  {/* Mini bar chart */}
+                  <div className="flex items-end gap-[5px] h-[68px] mb-10 px-1">
+                    {[32, 50, 40, 65, 75, 85, 94].map((h, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-t-sm"
+                        style={{
+                          height: `${h}%`,
+                          backgroundColor: i >= 3
+                            ? `hsl(158 64% 52% / ${0.38 + i * 0.13})`
+                            : "hsl(220 9% 46% / 0.14)",
+                        }}
+                      />
+                    ))}
                   </div>
-                </div>
-              ))}
+
+                  <div className="w-full h-px bg-primary/14 mb-6" />
+
+                  <div className="space-y-4">
+                    {[
+                      { antes: "decisões no feeling",        depois: "indicadores claros" },
+                      { antes: "sem indicadores definidos",   depois: "acompanhamento real" },
+                      { antes: "acompanhamento informal",     depois: "decisões baseadas em dados" },
+                    ].map((item) => (
+                      <div key={item.depois} className="flex items-start gap-3">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/65 shrink-0" />
+                        <div className="min-w-0">
+                          <span className="text-[12px] text-ink-soft/38 line-through leading-snug mr-2">{item.antes}</span>
+                          <span className="text-[13px] font-medium text-ink/80 leading-snug">{item.depois}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Card 3: Operação — medium (col-span-2) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="lg:col-span-2 rounded-2xl bg-secondary/55 border border-border/50 p-8 overflow-hidden shadow-soft"
+                >
+                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50 mb-5">Operação</p>
+                  <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-8 max-w-[260px]">
+                    De sobrecarregada para{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">previsível</span>
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { antes: "atividades repetitivas",  depois: "fluxos automatizados" },
+                      { antes: "equipe sobrecarregada",   depois: "menos dependência" },
+                      { antes: "retrabalho constante",    depois: "mais previsibilidade" },
+                    ].map((item) => (
+                      <div key={item.depois} className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                        <span className="text-[13px] text-ink-soft/38 line-through sm:w-[180px] shrink-0 leading-snug">{item.antes}</span>
+                        <div className="shrink-0 flex items-center gap-1.5">
+                          <div className="w-7 h-px bg-primary/35" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/55" />
+                        </div>
+                        <span className="text-[13px] font-medium text-ink/80 leading-snug">{item.depois}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Card 4: CTA accent (col-span-1) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { scale: 1.025 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="lg:col-span-1 rounded-2xl bg-primary p-8 overflow-hidden relative grain flex flex-col justify-between min-h-[180px]"
+                >
+                  <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+                  <div className="relative z-10">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-white/50 mb-4">Próximo passo</p>
+                    <p className="text-[1.15rem] font-semibold text-white leading-[1.3]">
+                      Identifique onde sua operação perde energia
+                    </p>
+                  </div>
+                  <a
+                    href="#cta-final"
+                    className="relative z-10 mt-8 inline-flex items-center gap-1.5 text-[13px] font-semibold text-white/85 hover:text-white transition-colors group"
+                  >
+                    Fazer diagnóstico
+                    <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+                  </a>
+                </motion.div>
+
+              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -978,37 +1167,89 @@ export default function IndexDesejo() {
               </h2>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="grid sm:grid-cols-2 gap-6">
-              {[
-                {
-                  problema: "Quando você sai de férias, a operação sente",
-                  solucao: "Processos que funcionam com ou sem a sua presença",
-                },
-                {
-                  problema: "Cada lead ignorado é uma oportunidade perdida",
-                  solucao: "Cada oportunidade acompanhada automaticamente, sem depender de memória",
-                },
-                {
-                  problema: "O histórico da empresa existe só na cabeça das pessoas",
-                  solucao: "Tudo registrado, acessível e rastreável por qualquer membro do time",
-                },
-                {
-                  problema: "Urgências tomam o tempo que deveria ser de crescimento",
-                  solucao: "Operação previsível que devolve ao fundador o espaço para pensar grande",
-                },
-              ].map((card) => (
-                <div
-                  key={card.problema}
-                  className="rounded-2xl border border-border/50 bg-background p-7 card-hover shadow-soft"
+            {/* ── Bento O que muda ── */}
+            <motion.div variants={fadeUp}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                {/* Card hero — Quando você sai de férias (wide, dark) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="relative lg:col-span-2 rounded-2xl bg-surface-dark text-background p-8 overflow-hidden"
                 >
-                  <p className="text-[14px] text-ink/65 leading-snug mb-4 flex items-start gap-2">
-                    <span className="mt-1 w-3 h-px bg-ink-soft/25 shrink-0 inline-block" />
-                    {card.problema}
-                  </p>
-                  <div className="h-px bg-gradient-to-r from-primary/30 to-transparent mb-4" />
-                  <p className="text-[14px] font-medium text-ink/80 leading-snug">{card.solucao}</p>
-                </div>
-              ))}
+                  <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-primary/12 blur-3xl pointer-events-none" />
+                  <div className="relative z-10">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-background/35 mb-5">Antes → Depois</p>
+                    <p className="text-[13px] text-background/45 line-through mb-2 leading-snug">Quando você sai de férias, a operação sente</p>
+                    <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight text-background mb-6">
+                      Processos que funcionam{" "}
+                      <span className="font-serif italic font-normal text-primary">com ou sem a sua presença</span>
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {["processos padronizados", "responsabilidades definidas", "autonomia da equipe"].map(s => (
+                        <span key={s} className="text-[12px] px-3 py-1.5 rounded-full border border-background/14 text-background/65">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Card — Leads + Operação (green accent, tall double-card) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="md:row-span-2 lg:row-span-2 rounded-2xl bg-primary/[0.07] border border-primary/18 p-8 overflow-hidden"
+                >
+                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/60 mb-5">Comercial</p>
+                  <p className="text-[12px] text-ink-soft/40 line-through mb-2">Cada lead ignorado é uma oportunidade perdida</p>
+                  <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight mb-5">
+                    Cada oportunidade{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">acompanhada automaticamente</span>
+                  </h3>
+                  <div className="space-y-2.5 mb-8">
+                    {["Automação de follow-up", "CRM integrado", "Histórico centralizado"].map(s => (
+                      <div key={s} className="flex items-center gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/65 shrink-0" />
+                        <span className="text-[13px] text-ink/75">{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="w-full h-px bg-primary/15 my-6" />
+                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/60 mb-5">Operação</p>
+                  <p className="text-[12px] text-ink-soft/40 line-through mb-2">Urgências tomam o tempo de crescimento</p>
+                  <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight mb-5">
+                    Operação previsível que devolve o{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">espaço para pensar grande</span>
+                  </h3>
+                  <div className="space-y-2.5">
+                    {["Prioridades no lugar", "Menos urgências", "Fundador estratégico"].map(s => (
+                      <div key={s} className="flex items-center gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/65 shrink-0" />
+                        <span className="text-[13px] text-ink/75">{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Card — Histórico espalhado (white, wide) */}
+                <motion.div
+                  whileHover={prefersReduced ? {} : { y: -3 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="lg:col-span-2 rounded-2xl bg-background border border-border/50 p-8 shadow-soft overflow-hidden"
+                >
+                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50 mb-5">Dados & Histórico</p>
+                  <p className="text-[12px] text-ink-soft/40 line-through mb-2">O histórico da empresa existe só na cabeça das pessoas</p>
+                  <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight mb-5">
+                    Tudo registrado,{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">acessível e rastreável</span>
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {["histórico de decisões", "dashboards", "indicadores", "rastreabilidade"].map(s => (
+                      <span key={s} className="text-[12px] px-3 py-1.5 rounded-full bg-secondary/70 border border-border/40 text-ink/60">{s}</span>
+                    ))}
+                  </div>
+                </motion.div>
+
+              </div>
             </motion.div>
           </motion.div>
         </div>
