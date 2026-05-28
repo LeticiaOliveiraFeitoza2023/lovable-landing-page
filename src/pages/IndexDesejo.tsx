@@ -177,10 +177,10 @@ export default function IndexDesejo() {
   const HERO_EXTENDED = vh * 3.4;
 
   const rawIceX       = useTransform(scrollY, [0, HERO_END * 0.65], ["0%", "0%"]);
-  const rawIceScale   = useTransform(scrollY, [0, HERO_END * 0.45, HERO_END * 0.85], [0.65, 0.82, 0.9]);
+  const rawIceScale   = useTransform(scrollY, [0, HERO_END * 0.45, HERO_END * 0.85], [0.85, 1.05, 1.18]);
   const rawIceY       = useTransform(scrollY, [0, HERO_END * 0.65], ["18%", "0%"]);
-  const rawIceOpacity = useTransform(scrollY, [0, HERO_END * 0.18, HERO_END * 0.52], [0, 0, 0.88]);
-  const rawIceBlur    = useTransform(scrollY, [HERO_END * 0.18, HERO_END * 0.52], [14, 0]);
+  const rawIceOpacity = useTransform(scrollY, [0, HERO_END * 0.18, HERO_END * 0.52], [0, 0, 0.62]);
+  const rawIceBlur    = useTransform(scrollY, [HERO_END * 0.18, HERO_END * 0.52], [16, 0.5]);
   const iceBlurFilter = useTransform(rawIceBlur, (v) => `blur(${Math.max(0, v).toFixed(1)}px)`);
   const iceX          = useSpring(rawIceX,       { stiffness: 40, damping: 18 });
   const iceScale      = useSpring(rawIceScale,   { stiffness: 40, damping: 18 });
@@ -258,7 +258,23 @@ export default function IndexDesejo() {
           Dois CTAs: primário (ação) + secundário (curiosidade).
       */}
       <div style={{ minHeight: isMobile || prefersReduced ? "100svh" : "440vh" }} className="relative bg-background">
-      <section className="sticky top-0 h-[100svh] overflow-hidden flex items-center pt-[68px] bg-background">
+      <section
+        className="sticky top-0 h-[100svh] overflow-hidden flex items-center pt-[68px]"
+        style={{
+          background: [
+            "linear-gradient(to bottom,",
+            "  #F7F8F7 0%,",
+            "  #eaf5f1 18%,",
+            "  #c8ebe2 36%,",
+            "  #8fd4c8 48%,",
+            "  #4db8aa 56%,",
+            "  #1f9284 68%,",
+            "  #0d6e66 82%,",
+            "  #074f49 100%",
+            ")",
+          ].join(""),
+        }}
+      >
 
         <div className="absolute inset-0 pointer-events-none hidden lg:block">
           <div className="absolute left-0 right-0 top-[30%] h-px bg-border/20" />
@@ -398,7 +414,7 @@ export default function IndexDesejo() {
                     initial="hidden" animate="visible"
                     variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
                   >
-                    {"O que a maioria vê".split("").map((char, i) => (
+                    {"O que a maioria das empresas enxergam".split("").map((char, i) => (
                       <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
                     ))}
                   </motion.p>
@@ -407,7 +423,7 @@ export default function IndexDesejo() {
                       initial="hidden" animate="visible"
                       variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.6 } } }}
                     >
-                      {"Empresas enxergam sintomas".split("").map((char, i) => (
+                      {"A ponta do iceberg. O sintoma.".split("").map((char, i) => (
                         <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.08 } } }}>{char}</motion.span>
                       ))}
                       <motion.span
@@ -423,7 +439,7 @@ export default function IndexDesejo() {
                     initial="hidden" animate="visible"
                     variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.2 } } }}
                   >
-                    {["Urgências constantes", "Gargalos visíveis", "Retrabalho frequente"].map(s => (
+                    {["Atraso nas entregas", "Equipe sempre apagando incêndio", "Retrabalho constante", "Falta de dados para decidir"].map(s => (
                       <motion.li key={s} variants={{ hidden: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}>{s}</motion.li>
                     ))}
                   </motion.ul>
@@ -447,7 +463,7 @@ export default function IndexDesejo() {
                     initial="hidden" animate="visible"
                     variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
                   >
-                    {"O que a FeelFlow mapeia".split("").map((char, i) => (
+                    {"O que a FeelFlow vê".split("").map((char, i) => (
                       <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
                     ))}
                   </motion.p>
@@ -456,7 +472,7 @@ export default function IndexDesejo() {
                       initial="hidden" animate="visible"
                       variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.8 } } }}
                     >
-                      {"A FeelFlow enxerga estruturas".split("").map((char, i) => (
+                      {"O que está debaixo. A estrutura.".split("").map((char, i) => (
                         <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.08 } } }}>{char}</motion.span>
                       ))}
                       <motion.span
@@ -472,7 +488,7 @@ export default function IndexDesejo() {
                     initial="hidden" animate="visible"
                     variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.5 } } }}
                   >
-                    {["Processos que sustentam o problema", "Decisões que criam dependência", "Automações que eliminam o retrabalho"].map(s => (
+                    {["Processos sem dono definido", "Informação presa na cabeça de pessoas-chave", "Sistemas que não se comunicam", "Operação que trava quando alguém falta"].map(s => (
                       <motion.li key={s} variants={{ hidden: { opacity: 0, x: 8 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}>{s}</motion.li>
                     ))}
                   </motion.ul>
@@ -521,12 +537,12 @@ export default function IndexDesejo() {
             className="relative p-6 rounded-2xl bg-secondary/60 border border-border/40 overflow-hidden"
           >
             <div className="absolute top-0 left-6 right-6 h-px bg-border/60" />
-            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/55 mb-3">O que a maioria vê</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/55 mb-3">O que a maioria das empresas enxergam</p>
             <p className="text-[1.45rem] font-semibold leading-[1.1] tracking-tight text-ink/90 mb-5">
-              Empresas enxergam <span className="font-serif italic font-normal">sintomas</span>
+              A ponta do iceberg. <span className="font-serif italic font-normal">O sintoma.</span>
             </p>
             <ul className="space-y-2.5">
-              {["Urgências constantes", "Gargalos visíveis", "Retrabalho frequente"].map(s => (
+              {["Atraso nas entregas", "Equipe sempre apagando incêndio", "Retrabalho constante", "Falta de dados para decidir"].map(s => (
                 <li key={s} className="flex items-center gap-2.5 text-[13px] text-ink-soft">
                   <span className="w-1.5 h-1.5 rounded-full bg-ink-soft/30 shrink-0" />{s}
                 </li>
@@ -551,12 +567,12 @@ export default function IndexDesejo() {
             className="relative p-6 rounded-2xl bg-primary/[0.07] border border-primary/20 overflow-hidden"
           >
             <div className="absolute top-0 left-6 right-6 h-px bg-primary/30" />
-            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-primary-deep mb-3">O que a FeelFlow mapeia</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-primary-deep mb-3">O que a FeelFlow vê</p>
             <p className="text-[1.45rem] font-semibold leading-[1.1] tracking-tight text-ink mb-5">
-              A FeelFlow enxerga <span className="font-serif italic font-normal text-primary-deep">estruturas</span>
+              O que está debaixo. <span className="font-serif italic font-normal text-primary-deep">A estrutura.</span>
             </p>
             <ul className="space-y-2.5">
-              {["Processos que sustentam o problema", "Decisões que criam dependência", "Automações que eliminam o retrabalho"].map(s => (
+              {["Processos sem dono definido", "Informação presa na cabeça de pessoas-chave", "Sistemas que não se comunicam", "Operação que trava quando alguém falta"].map(s => (
                 <li key={s} className="flex items-start gap-2.5 text-[13px] text-ink-soft">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />{s}
                 </li>
@@ -572,7 +588,8 @@ export default function IndexDesejo() {
 
       <Rule />
 
-      {/* ══════════════ 2. SINAIS — MUDANÇA 4 ══════════════
+      {/* ══════════════ 2. METÁFORA DO ICEBERG ══════════════
+      {/* ══════════════ 3. SINAIS — MUDANÇA 4 ══════════════
           Reencuadrado como reconhecimento de fase de crescimento,
           não lista de falhas. A pessoa se vê em transição, não em colapso.
       */}
