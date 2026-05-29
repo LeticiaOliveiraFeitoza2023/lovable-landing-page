@@ -28,4 +28,5 @@ dist-ssr
 !.env.example
 .claude/
 *.mp4
+!src/assets/iceberg.mp4
 *.pdf
