@@ -20,7 +20,7 @@
 import { useState, useEffect, useRef } from "react";
 import logo from "@/assets/Horizontal_2.png";
 import leticiaPhoto from "@/assets/leticia.jpg";
-import { HeroSpline3D } from "@/components/HeroSpline3D";
+import icebergVideo from "@/assets/iceberg.mp4";
 import { ChevronDown, Settings, Zap, Monitor, BarChart2, Link2, Bot, TrendingUp, RefreshCw, Building2 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
@@ -154,63 +154,46 @@ function AnimatedNumber({
    ═══════════════════════════════════════════════════ */
 export default function IndexDesejo() {
   const [scrolled, setScrolled] = useState(false);
-  const [showMaioria, setShowMaioria] = useState(false);
-  const [showFeel, setShowFeel] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [vh, setVh] = useState(typeof window !== "undefined" ? window.innerHeight : 800);
   const prefersReduced = useReducedMotion();
 
   useEffect(() => {
-    const update = () => {
-      setVh(window.innerHeight);
-      setIsMobile(window.innerWidth < 768);
-    };
+    const update = () => setIsMobile(window.innerWidth < 768);
     update();
     window.addEventListener("resize", update, { passive: true });
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  /* ─── Scrollytelling hero ─── */
+  /* ─── Navbar scroll state ─── */
   const { scrollY } = useScroll();
-  const HERO_END      = vh * 1.8;
-  const HERO_TOTAL    = vh * 2.6;
-  const HERO_EXTENDED = vh * 3.4;
-
-  const rawIceX       = useTransform(scrollY, [0, HERO_END * 0.65], ["0%", "0%"]);
-  const rawIceScale   = useTransform(scrollY, [0, HERO_END * 0.45, HERO_END * 0.85], [0.85, 1.05, 1.18]);
-  const rawIceY       = useTransform(scrollY, [0, HERO_END * 0.65], ["18%", "0%"]);
-  const rawIceOpacity = useTransform(scrollY, [0, HERO_END * 0.18, HERO_END * 0.52], [0, 0, 0.62]);
-  const rawIceBlur    = useTransform(scrollY, [HERO_END * 0.18, HERO_END * 0.52], [16, 0.5]);
-  const iceBlurFilter = useTransform(rawIceBlur, (v) => `blur(${Math.max(0, v).toFixed(1)}px)`);
-  const iceX          = useSpring(rawIceX,       { stiffness: 40, damping: 18 });
-  const iceScale      = useSpring(rawIceScale,   { stiffness: 40, damping: 18 });
-  const iceY          = useSpring(rawIceY,       { stiffness: 40, damping: 18 });
-  const iceOpacity    = useSpring(rawIceOpacity, { stiffness: 40, damping: 18 });
-
-  const heroOpacity  = useTransform(scrollY, [HERO_END * 0.08, HERO_END * 0.28], [1, 0]);
-  const scrollHintOp = useTransform(scrollY, [0, HERO_END * 0.07], [1, 0]);
-
-  const maioriaOpacity = useTransform(scrollY, [HERO_END * 0.56, HERO_END * 0.72], [0, 1]);
-  const rawMaioriaY    = useTransform(scrollY, [HERO_END * 0.56, HERO_END * 0.72], [36, 0]);
-  const maioriaY       = useSpring(rawMaioriaY, { stiffness: 28, damping: 30 });
-
-  const feelOpacity    = useTransform(scrollY, [HERO_TOTAL * 0.58, HERO_TOTAL * 0.72], [0, 1]);
-  const rawFeelY       = useTransform(scrollY, [HERO_TOTAL * 0.58, HERO_TOTAL * 0.72], [36, 0]);
-  const feelY          = useSpring(rawFeelY, { stiffness: 28, damping: 30 });
-
-  /* Fade de saída — só aparece quando a seção está chegando ao fim */
-  const exitFadeOpacity = useTransform(scrollY, [HERO_EXTENDED * 0.82, HERO_EXTENDED * 0.97], [0, 1]);
-
-  useMotionValueEvent(maioriaOpacity, "change", (v) => {
-    if (v > 0.5 && !showMaioria) setShowMaioria(true);
-    if (v < 0.15) setShowMaioria(false);
-  });
-  useMotionValueEvent(feelOpacity, "change", (v) => {
-    if (v > 0.5 && !showFeel) setShowFeel(true);
-    if (v < 0.15) setShowFeel(false);
-  });
-
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 32));
+
+  /* ─── Hero vídeo scroll-driven ───
+     Usa scrollY global + transform direta (evita bugs do useScroll target).
+     Container = 240vh → scroll range = 140vh (240 - 100).
+     Clampamos a 0-1 manualmente com useTransform de função.
+  */
+  const heroContainerRef = useRef<HTMLDivElement>(null);
+
+  // Progress 0→1 ao longo dos 140vh de scroll do hero
+  const heroProgress = useTransform(scrollY, (v) => {
+    const el = heroContainerRef.current;
+    if (!el) return 0;
+    const range = el.offsetHeight - window.innerHeight;
+    return range > 0 ? Math.min(1, Math.max(0, v / range)) : 0;
+  });
+
+  // Vídeo: escala e translação vertical no scroll
+  const videoScale   = useTransform(heroProgress, [0, 0.55, 1], [1, 1.22, 1.60]);
+  const rawVideoY    = useTransform(heroProgress, [0, 0.45, 1], ["0%", "0%", "-22%"]);
+  const videoY       = useSpring(rawVideoY, { stiffness: 28, damping: 22 });
+
+  // Texto fase 1 some; fase 2 aparece
+  const heroTextOp   = useTransform(heroProgress, [0, 0.16, 0.30], [1, 1, 0]);
+  const scrollHintOp = useTransform(heroProgress, [0, 0.12], [1, 0]);
+  const phase2Op     = useTransform(heroProgress, [0.38, 0.58], [0, 1]);
+  const rawPhase2Y   = useTransform(heroProgress, [0.38, 0.62], [32, 0]);
+  const phase2Y      = useSpring(rawPhase2Y, { stiffness: 28, damping: 22 });
 
   return (
     <div className="min-h-screen bg-background text-ink" style={{ overflowX: "clip" }}>
@@ -255,80 +238,52 @@ export default function IndexDesejo() {
         Pular para o conteúdo
       </a>
 
-      {/* ══════════════ 1. HERO — MUDANÇA 2 ══════════════
-          Headline aspiracional: fala sobre onde chegar, não sobre o que está errado.
-          Subtítulo de possibilidade, não de dor.
-          Dois CTAs: primário (ação) + secundário (curiosidade).
+      {/* ══════════════ 1. HERO — VÍDEO ICEBERG ══════════════
+          Seção 1: iceberg completo, 1 CTA.
+          Seção 2: zoom scroll-driven na ponta + metáfora acima/abaixo.
       */}
-      <div style={{ minHeight: isMobile || prefersReduced ? "100svh" : "440vh" }} className="relative bg-background">
-      <section
-        className="sticky top-0 h-[100svh] overflow-hidden flex items-center pt-[68px]"
-        style={{
-          background: [
-            "linear-gradient(to bottom,",
-            "  #eaf5f1 0%,",
-            "  #c8ebe2 22%,",
-            "  #8fd4c8 40%,",
-            "  #4db8aa 54%,",
-            "  #1f9284 66%,",
-            "  #0d6e66 80%,",
-            "  #074f49 100%",
-            ")",
-          ].join(""),
-        }}
-      >
+      <div ref={heroContainerRef} style={{ height: prefersReduced || isMobile ? "100svh" : "240vh" }} className="relative">
+      <section className="sticky top-0 h-[100svh] overflow-hidden">
 
-        <div className="absolute inset-0 pointer-events-none hidden lg:block">
-          <div className="absolute left-0 right-0 top-[30%] h-px bg-border/20" />
-          <div className="absolute left-0 right-0 top-[65%] h-px bg-border/15" />
-        </div>
-
-        {/* Névoa — background inicial do hero, desaparece no scroll */}
+        {/* ── Vídeo fullscreen com zoom scroll-driven ── */}
         <motion.div
           aria-hidden="true"
-          className="absolute inset-0 pointer-events-none z-[1]"
-          style={{ opacity: heroOpacity }}
+          className="absolute inset-0 z-0"
+          style={prefersReduced ? {} : { scale: videoScale, y: videoY }}
         >
-          <div
-            className="absolute inset-0"
-            style={{
-              background: [
-                "radial-gradient(ellipse 70% 55% at 20% 70%, rgba(210,222,216,0.45) 0%, transparent 65%)",
-                "radial-gradient(ellipse 60% 50% at 80% 35%, rgba(220,228,223,0.35) 0%, transparent 60%)",
-                "radial-gradient(ellipse 90% 40% at 50% 90%, rgba(205,218,212,0.3) 0%, transparent 55%)",
-                "radial-gradient(ellipse 50% 70% at 10% 20%, rgba(228,234,230,0.25) 0%, transparent 50%)",
-              ].join(", "),
-            }}
-          />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: "center 20%" }}
+          >
+            <source src={icebergVideo} type="video/mp4" />
+          </video>
+          {/* Overlay sutil — contraste em todos os frames */}
+          <div className="absolute inset-0 bg-white/[0.10]" aria-hidden="true" />
         </motion.div>
 
-        {/* Iceberg 3D — aparece no scroll, invisível no estado inicial */}
+        {/* ── Fase 1: texto hero — some no scroll ── */}
         <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden z-[2]"
-          style={isMobile || prefersReduced
-            ? { opacity: 0 }
-            : { x: iceX, scale: iceScale, y: iceY, opacity: iceOpacity, filter: iceBlurFilter }
-          }
-        >
-          <HeroSpline3D darkMode={false} />
-        </motion.div>
-
-        {/* Sem vinheta lateral — teal full-bleed em todas as fases */}
-
-        {/* Hero text — centralizado */}
-        <motion.div
-          className={`z-10 w-full max-w-7xl mx-auto px-6 lg:px-10 ${
-            isMobile ? "absolute bottom-0 left-0 right-0 pb-12 text-center" : "relative pt-6 pb-10 text-center"
-          }`}
-          style={{ opacity: isMobile ? 1 : heroOpacity }}
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pt-[68px]"
+          style={{ opacity: prefersReduced ? 1 : heroTextOp }}
         >
           <motion.div
             initial="hidden"
             animate="visible"
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } } }}
+            className="text-center"
           >
-            {/* Headline aspiracional — 3 linhas, centralizada */}
-            <h1 className="text-[clamp(1.85rem,5.5vw,4.2rem)] leading-[1.08] md:leading-[1.04] font-semibold tracking-tight text-center mx-auto max-w-[720px]">
+            <motion.p
+              variants={fadeUp}
+              className="text-[11px] uppercase tracking-[0.22em] font-medium text-ink/48 mb-6 font-mono"
+            >
+              Reconhecimento de fase
+            </motion.p>
+
+            <h1 className="text-[clamp(2rem,5.5vw,4.2rem)] leading-[1.06] font-semibold tracking-tight max-w-[740px] mx-auto">
               {[
                 <span key="l1">Empresas que crescem</span>,
                 <span key="l2">
@@ -352,179 +307,100 @@ export default function IndexDesejo() {
               ))}
             </h1>
 
-            {/* Subtítulo de possibilidade — centralizado */}
-            <motion.p variants={fadeUp} className="mt-8 md:mt-12 mx-auto max-w-[600px] text-[15px] md:text-[17px] text-ink/70 leading-[1.75] md:leading-[1.85] text-center">
+            <motion.p
+              variants={fadeUp}
+              className="mt-8 md:mt-10 mx-auto max-w-[560px] text-[15px] md:text-[17px] text-ink/65 leading-[1.8]"
+            >
               As melhores operações não surgem por acaso.{" "}
               <span className="text-ink font-medium">
                 Elas são construídas com método, intenção e as ferramentas certas.
               </span>
             </motion.p>
 
-            {/* CTAs — centralizados */}
-            <motion.div variants={fadeUp} className="mt-8 md:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {/* CTA único */}
+            <motion.div variants={fadeUp} className="mt-10">
               <motion.a
                 href="/mergulho"
                 onClick={() => trackEvent('click_cta_hero', { location: 'hero', label: 'Fazer Diagnóstico' })}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-7 py-3.5 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow"
+                className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-8 py-4 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow"
               >
                 Fazer Diagnóstico
               </motion.a>
-              <motion.a
-                href="#como-funciona"
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 text-[14px] font-medium text-ink-soft hover:text-ink transition-colors duration-200 px-4 py-3.5"
-              >
-                Ver como funciona
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                  <path d="M2 7h10M8 3l4 4-4 4"/>
-                </svg>
-              </motion.a>
             </motion.div>
-
           </motion.div>
         </motion.div>
 
-        {/* Scrollytelling — Fase 2: "O que a maioria vê" (mantido) */}
-        <motion.div
-          className="absolute inset-0 z-10 flex-col justify-start pointer-events-none hidden md:flex"
-          style={{ opacity: maioriaOpacity, y: maioriaY }}
-        >
-          <div className="w-full max-w-[1140px] mx-auto px-6 pt-[100px] flex justify-start">
-            <div className="max-w-[300px] text-left ml-8 lg:ml-14">
-              {showMaioria && (
-                <>
-                  <motion.p
-                    className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/70 mb-4"
-                    initial="hidden" animate="visible"
-                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
-                  >
-                    {"O que a maioria das empresas enxergam".split("").map((char, i) => (
-                      <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
-                    ))}
-                  </motion.p>
-                  <p className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-ink/90">
-                    <motion.span
-                      initial="hidden" animate="visible"
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.6 } } }}
-                    >
-                      {"A ponta do iceberg. O sintoma.".split("").map((char, i) => (
-                        <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.08 } } }}>{char}</motion.span>
-                      ))}
-                      <motion.span
-                        className="inline-block w-[2px] h-[1em] bg-primary align-middle ml-0.5"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 1, 0, 1] }}
-                        transition={{ duration: 0.9, repeat: Infinity, delay: 3.0 }}
-                      />
-                    </motion.span>
-                  </p>
-                  <motion.ul
-                    className="mt-4 space-y-1.5 text-[13px] text-ink-soft/80"
-                    initial="hidden" animate="visible"
-                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.2 } } }}
-                  >
-                    {["Atraso nas entregas", "Equipe sempre apagando incêndio", "Retrabalho constante", "Falta de dados para decidir"].map(s => (
-                      <motion.li key={s} variants={{ hidden: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}>{s}</motion.li>
-                    ))}
-                  </motion.ul>
-                </>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Scrollytelling — Fase 3: "O que a FeelFlow mapeia" */}
-        <motion.div
-          className="absolute inset-0 z-10 flex-col justify-end pointer-events-none hidden md:flex"
-          style={{ opacity: feelOpacity, y: feelY }}
-        >
-          <div className="w-full max-w-[1140px] mx-auto px-6 pb-14 flex justify-end">
-            <div className="max-w-[300px] text-right mr-8 lg:mr-14">
-              {showFeel && (
-                <>
-                  <motion.p
-                    className="text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200/80 mb-4"
-                    initial="hidden" animate="visible"
-                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
-                  >
-                    {"O que a FeelFlow vê".split("").map((char, i) => (
-                      <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.06 } } }}>{char}</motion.span>
-                    ))}
-                  </motion.p>
-                  <p className="text-[clamp(1.5rem,3.2vw,2.5rem)] font-semibold leading-[1.08] tracking-tight text-white">
-                    <motion.span
-                      initial="hidden" animate="visible"
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.8 } } }}
-                    >
-                      {"O que está debaixo. A estrutura.".split("").map((char, i) => (
-                        <motion.span key={i} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.08 } } }}>{char}</motion.span>
-                      ))}
-                      <motion.span
-                        className="inline-block w-[2px] h-[1em] bg-primary align-middle ml-0.5"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 1, 0, 1] }}
-                        transition={{ duration: 0.9, repeat: Infinity, delay: 3.5 }}
-                      />
-                    </motion.span>
-                  </p>
-                  <motion.ul
-                    className="mt-4 space-y-1.5 text-[13px] text-white/70"
-                    initial="hidden" animate="visible"
-                    variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 2.5 } } }}
-                  >
-                    {["Processos sem dono definido", "Informação presa na cabeça de pessoas-chave", "Sistemas que não se comunicam", "Operação que trava quando alguém falta"].map(s => (
-                      <motion.li key={s} variants={{ hidden: { opacity: 0, x: 8 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}>{s}</motion.li>
-                    ))}
-                  </motion.ul>
-
-                  {/* MUDANÇA 3 — Metáfora nomeada explicitamente */}
-                  <motion.p
-                    className="mt-6 text-[11px] font-mono text-white/40 tracking-wide"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 4.5, duration: 1 }}
-                  >
-                    O que aparece é sintoma. O que está embaixo é estrutura.
-                  </motion.p>
-                </>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Fade-out inferior — dissolve o teal escuro antes da próxima seção */}
-        <motion.div
-          aria-hidden="true"
-          className="absolute bottom-0 left-0 right-0 pointer-events-none z-[3]"
-          style={{
-            opacity: exitFadeOpacity,
-            height: "160px",
-            background: "linear-gradient(to bottom, transparent 0%, rgba(7,79,73,0.0) 20%, rgba(247,248,247,0.55) 70%, #F7F8F7 100%)",
-          }}
-        />
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none"
-          style={{ opacity: scrollHintOp }}
-        >
+        {/* ── Fase 2: metáfora iceberg — aparece no scroll (desktop) ── */}
+        {!isMobile && !prefersReduced && (
           <motion.div
-            className="flex flex-col items-center gap-1.5 text-ink-soft/40"
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pointer-events-none"
+            style={{ opacity: phase2Op, y: phase2Y }}
           >
-            <ChevronDown className="w-4 h-4" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em]">Role</span>
+            <div className="w-full max-w-[820px] mx-auto">
+              <p className="text-center text-[11px] uppercase tracking-[0.22em] font-mono text-ink/38 mb-7">
+                A metáfora do iceberg
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {/* Acima da linha d'água */}
+                <div className="rounded-2xl bg-white/82 backdrop-blur-sm border border-white/55 p-7 shadow-soft">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink-soft/55 mb-3">
+                    O que todos veem
+                  </p>
+                  <p className="text-[1.2rem] font-semibold leading-[1.15] text-ink mb-5">
+                    A ponta do iceberg.{" "}
+                    <span className="font-serif italic font-normal text-ink/50">O sintoma.</span>
+                  </p>
+                  <ul className="space-y-2.5">
+                    {["Atraso nas entregas", "Equipe sempre apagando incêndio", "Retrabalho constante", "Falta de dados para decidir"].map(s => (
+                      <li key={s} className="flex items-center gap-2.5 text-[13px] text-ink-soft">
+                        <span className="w-1.5 h-1.5 rounded-full bg-ink-soft/30 shrink-0" />{s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Abaixo da linha d'água */}
+                <div className="rounded-2xl bg-primary/[0.09] backdrop-blur-sm border border-primary/22 p-7 shadow-soft">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-primary-deep mb-3">
+                    O que a FeelFlow vê
+                  </p>
+                  <p className="text-[1.2rem] font-semibold leading-[1.15] text-ink mb-5">
+                    O que está debaixo.{" "}
+                    <span className="font-serif italic font-normal text-primary-deep">A estrutura.</span>
+                  </p>
+                  <ul className="space-y-2.5">
+                    {["Processos sem dono definido", "Informação presa em pessoas-chave", "Sistemas que não se comunicam", "Operação que trava quando alguém falta"].map(s => (
+                      <li key={s} className="flex items-start gap-2.5 text-[13px] text-ink-soft">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />{s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </motion.div>
+        )}
+
+        {/* ── Indicador de scroll ── */}
+        {!prefersReduced && (
+          <motion.div
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 pointer-events-none"
+            style={{ opacity: scrollHintOp }}
+          >
+            <span className="text-[10px] font-mono text-ink/32 tracking-[0.2em]">scroll</span>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+              className="w-px h-8 bg-gradient-to-b from-ink/28 to-transparent"
+            />
+          </motion.div>
+        )}
 
       </section>
       </div>
 
-      {/* ══════════════ 1B. TESE — MOBILE ══════════════ */}
+      {/* ══════════════ 1B. METÁFORA MOBILE — cards inline após hero ══════════════ */}
       <div className="md:hidden bg-background px-6 pt-10 pb-16">
         <div className="space-y-4">
           <motion.div
@@ -535,8 +411,8 @@ export default function IndexDesejo() {
             className="relative p-6 rounded-2xl bg-secondary/60 border border-border/40 overflow-hidden"
           >
             <div className="absolute top-0 left-6 right-6 h-px bg-border/60" />
-            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/55 mb-3">O que a maioria das empresas enxergam</p>
-            <p className="text-[1.45rem] font-semibold leading-[1.1] tracking-tight text-ink/90 mb-5">
+            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/55 mb-3">O que todos veem</p>
+            <p className="text-[1.35rem] font-semibold leading-[1.1] tracking-tight text-ink/90 mb-4">
               A ponta do iceberg. <span className="font-serif italic font-normal">O sintoma.</span>
             </p>
             <ul className="space-y-2.5">
