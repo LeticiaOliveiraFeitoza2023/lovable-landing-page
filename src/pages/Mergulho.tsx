@@ -78,10 +78,11 @@ const PREFERENCIA = [
 ];
 
 // ─── Animação ─────────────────────────────────────────────────────────────────
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const slideIn = {
   initial: { opacity: 0, x: 32 },
-  animate: { opacity: 1, x: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
-  exit:    { opacity: 0, x: -32, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.28, ease: EASE } },
+  exit:    { opacity: 0, x: -32, transition: { duration: 0.18, ease: EASE } },
 };
 
 // ─── Componentes auxiliares ────────────────────────────────────────────────────
