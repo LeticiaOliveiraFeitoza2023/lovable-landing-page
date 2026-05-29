@@ -8,7 +8,7 @@
  * POST: /api/leads/mergulho (CRM)
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logo from "@/assets/Horizontal_2.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, ChevronDown, Check, Loader2 } from "lucide-react";
@@ -152,6 +152,18 @@ export default function Mergulho() {
   const [error, setError]       = useState<string | null>(null);
   const [showObs, setShowObs]   = useState(false);
 
+  // Captura UTM params da URL ao montar o componente
+  const [utms, setUtms] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const captured: Record<string, string> = {};
+    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+      const val = p.get(key);
+      if (val) captured[key] = val;
+    }
+    if (Object.keys(captured).length > 0) setUtms(captured);
+  }, []);
+
   const set = (field: keyof FormData, value: string | string[]) =>
     setForm(prev => ({ ...prev, [field]: value }));
 
@@ -177,6 +189,12 @@ export default function Mergulho() {
         ...form,
         segmento:        segSlug,
         numFuncionarios: FUNC_SLUGS[funcIdx] ?? "1-10",
+        // UTM — enviados se capturados da URL
+        ...(utms.utm_source   && { utmSource:   utms.utm_source   }),
+        ...(utms.utm_medium   && { utmMedium:   utms.utm_medium   }),
+        ...(utms.utm_campaign && { utmCampaign: utms.utm_campaign }),
+        ...(utms.utm_content  && { utmContent:  utms.utm_content  }),
+        ...(utms.utm_term     && { utmTerm:     utms.utm_term     }),
       };
 
       const res = await fetch(`${CRM_API}/api/leads/mergulho`, {
