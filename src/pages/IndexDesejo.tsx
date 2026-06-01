@@ -303,7 +303,7 @@ export default function IndexDesejo() {
 
         {/* ── Fundo sólido neutro — entra na Fase 2 ── */}
         {!prefersReduced && (
-          <motion.div aria-hidden="true" className="absolute inset-0 z-[1] bg-[#111210]"
+          <motion.div aria-hidden="true" className="absolute inset-0 z-[1] bg-[#f0ede8]"
             style={{ opacity: phase2BgOp }}
           />
         )}
@@ -380,26 +380,26 @@ export default function IndexDesejo() {
                   <motion.p
                     animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                     transition={{ duration: 0.55, delay: 0.0, ease }}
-                    className="text-[9px] uppercase tracking-[0.28em] font-mono text-white/35 mb-2.5"
+                    className="text-[9px] uppercase tracking-[0.28em] font-mono text-stone-400 mb-2.5"
                   >
                     O que todos veem
                   </motion.p>
                   <motion.p
                     animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
                     transition={{ duration: 0.6, delay: 0.08, ease }}
-                    className="text-[1.35rem] font-semibold text-white leading-[1.2] mb-3"
+                    className="text-[1.8rem] font-semibold text-stone-900 leading-[1.2] mb-3"
                   >
                     A ponta do iceberg.{" "}
-                    <span className="font-serif italic font-normal text-white/55">O sintoma.</span>
+                    <span className="font-serif italic font-normal text-stone-500">O sintoma.</span>
                   </motion.p>
                   <div className="space-y-1.5">
                     {["Atraso nas entregas", "Equipe apagando incêndio", "Retrabalho constante", "Dados que não chegam a tempo"].map((item, i) => (
                       <motion.p key={item}
                         animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
                         transition={{ duration: 0.45, delay: 0.16 + i * 0.07, ease }}
-                        className="flex items-center gap-2.5 text-[13px] text-white/45"
+                        className="flex items-center gap-2.5 text-[13px] text-stone-500"
                       >
-                        <span className="w-1 h-1 rounded-full bg-white/20 shrink-0" />{item}
+                        <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />{item}
                       </motion.p>
                     ))}
                   </div>
@@ -409,7 +409,7 @@ export default function IndexDesejo() {
                 <motion.div
                   animate={phase2Active ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
                   transition={{ duration: 0.55, delay: 0.46, ease }}
-                  className="h-px bg-gradient-to-r from-white/16 via-white/8 to-transparent origin-left"
+                  className="h-px bg-gradient-to-r from-stone-300 via-stone-200 to-transparent origin-left"
                 />
 
                 {/* Abaixo da linha d'água */}
@@ -424,19 +424,19 @@ export default function IndexDesejo() {
                   <motion.p
                     animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
                     transition={{ duration: 0.6, delay: 0.58, ease }}
-                    className="text-[1.35rem] font-semibold text-white leading-[1.2] mb-3"
+                    className="text-[1.8rem] font-semibold text-stone-900 leading-[1.2] mb-3"
                   >
                     O que está debaixo.{" "}
-                    <span className="font-serif italic font-normal text-white/55">A estrutura.</span>
+                    <span className="font-serif italic font-normal text-stone-500">A estrutura.</span>
                   </motion.p>
                   <div className="space-y-1.5">
                     {["Processos sem dono definido", "Informação presa em silos", "Sistemas que não se comunicam", "Gargalos invisíveis que travam o crescimento"].map((item, i) => (
                       <motion.p key={item}
                         animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
                         transition={{ duration: 0.45, delay: 0.64 + i * 0.07, ease }}
-                        className="flex items-center gap-2.5 text-[13px] text-white/45"
+                        className="flex items-center gap-2.5 text-[13px] text-stone-500"
                       >
-                        <span className="w-1 h-1 rounded-full bg-primary/40 shrink-0" />{item}
+                        <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />{item}
                       </motion.p>
                     ))}
                   </div>
@@ -450,7 +450,7 @@ export default function IndexDesejo() {
                 transition={{ duration: 0.65, delay: 0.1, ease }}
                 className="w-[52%] shrink-0 pointer-events-auto"
               >
-                <div className="rounded-xl overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.60)] border border-white/[0.07]">
+                <div className="rounded-xl overflow-hidden shadow-[0_20px_64px_rgba(0,0,0,0.14)] border border-stone-200/80">
                   {/* Chrome do browser */}
                   <div className="bg-[#1e2024] h-8 flex items-center gap-3 px-3.5 border-b border-white/[0.06]">
                     <div className="flex gap-1.5 shrink-0">
