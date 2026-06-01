@@ -40,11 +40,11 @@ html {
     --popover: 0 0% 100%;
     --popover-foreground: 221 39% 11%;
 
-    /* ─── Brand green ─── */
-    --primary: 158 64% 52%;          /* ≈ #34D399 */
+    /* ─── Brand green — alinhado ao logo (#35DA7B) ─── */
+    --primary: 145 69% 53%;          /* ≈ #35DA7B (logo) */
     --primary-foreground: 215 28% 8%;
-    --primary-glow: 158 72% 65%;
-    --primary-deep: 158 55% 28%;
+    --primary-glow: 145 72% 65%;
+    --primary-deep: 145 56% 29%;
 
     /* ─── Neutrals ─── */
     --secondary: 150 6% 94%;

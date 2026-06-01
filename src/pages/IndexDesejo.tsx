@@ -21,9 +21,8 @@ import { useState, useEffect, useRef } from "react";
 import logo from "@/assets/Horizontal_2.png";
 import leticiaPhoto from "@/assets/leticia.jpg";
 import heroPhoto from "@/assets/foto_hero.png";
-import icebergVideo from "@/assets/iceberg.mp4";
 import { ChevronDown, Settings, Zap, Monitor, BarChart2, Link2, Bot, TrendingUp, RefreshCw, Building2 } from "lucide-react";
-import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
 
 /* ─── Motion presets ─── */
@@ -177,8 +176,6 @@ export default function IndexDesejo() {
      Clampamos a 0-1 manualmente com useTransform de função.
   */
   const heroContainerRef = useRef<HTMLDivElement>(null);
-  const videoRef         = useRef<HTMLVideoElement>(null);
-  const videoPhaseRef    = useRef<1 | 2>(1);
 
   // Progress 0→1 ao longo dos 140vh de scroll do hero
   const heroProgress = useTransform(scrollY, (v) => {
@@ -197,35 +194,8 @@ export default function IndexDesejo() {
   const heroTextOp   = useTransform(heroProgress, [0, 0.16, 0.30], [1, 1, 0]);
   const scrollHintOp = useTransform(heroProgress, [0, 0.12], [1, 0]);
   const phase2Op     = useTransform(heroProgress, [0.38, 0.58], [0, 1]);
-  const rawPhase2Y   = useTransform(heroProgress, [0.38, 0.62], [32, 0]);
-  const phase2Y      = useSpring(rawPhase2Y, { stiffness: 28, damping: 22 });
-
-  /* ─── Controle do vídeo na Fase 2 ───────────────────────────
-     Foto na Fase 1 → vídeo toca do início na Fase 2 (uma vez).
-     Ao voltar: pausa e reseta o vídeo.
-  */
-  // Garante vídeo pausado no início (Phase 1 = foto, não vídeo)
-  useEffect(() => {
-    const v = videoRef.current;
-    if (v) { v.pause(); v.currentTime = 0; }
-  }, []);
 
   useMotionValueEvent(heroProgress, "change", (p) => {
-    // ── Controle do vídeo
-    const v = videoRef.current;
-    if (v && !prefersReduced) {
-      const wasPhase2 = videoPhaseRef.current === 2;
-      const nowPhase2 = p >= 0.35;
-      if (nowPhase2 && !wasPhase2) {
-        videoPhaseRef.current = 2;
-        v.currentTime = 0;
-        v.play().catch(() => {});
-      } else if (!nowPhase2 && wasPhase2) {
-        videoPhaseRef.current = 1;
-        v.pause();
-        v.currentTime = 0;
-      }
-    }
     // ── Ativa animações de texto da Fase 2 (só muda quando cruza o threshold)
     const nowActive = p >= 0.46;
     if (nowActive !== phase2ActiveRef.current) {
@@ -328,31 +298,15 @@ export default function IndexDesejo() {
           <motion.div
             initial="hidden" animate="visible"
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } } }}
-            className="max-w-[640px]"
+            className="max-w-[820px]"
           >
-            <motion.p variants={fadeUp}
-              className="text-[10px] uppercase tracking-[0.26em] font-medium text-stone-400 mb-5 font-mono"
-            >
-              Reconhecimento de fase
-            </motion.p>
-
-            <h1 className="text-[clamp(1.9rem,3.6vw,3.2rem)] leading-[1.1] font-bold tracking-tight text-stone-900">
+            <h1 className="text-[clamp(2.4rem,4.6vw,4.2rem)] leading-[1.08] font-bold tracking-tight text-stone-900">
               {([
                 <span key="l1">Empresas que crescem</span>,
-                <span key="l2">
-                  <span className="text-primary relative inline-block">
-                    sem travar
-                    <motion.span aria-hidden="true"
-                      className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-primary origin-left"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.65, delay: 0.92, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
-                    />
-                  </span>
-                  {" "}
-                  <span className="font-serif italic font-normal text-stone-700">têm operações</span>
+                <span key="l2">sem travar{" "}
+                  <span className="font-serif italic font-normal text-primary-deep">têm operações</span>
                 </span>,
-                <span key="l3" className="font-serif italic font-normal text-stone-700">
+                <span key="l3" className="font-serif italic font-normal text-primary-deep">
                   que trabalham por elas.
                 </span>,
               ] as React.ReactNode[]).map((line, i) => (
@@ -364,16 +318,7 @@ export default function IndexDesejo() {
               ))}
             </h1>
 
-            <motion.p variants={fadeUp}
-              className="mt-6 max-w-[460px] text-[14.5px] md:text-[15.5px] text-stone-600 leading-[1.8]"
-            >
-              As melhores operações não surgem por acaso.{" "}
-              <span className="text-stone-900 font-semibold">
-                Elas são construídas com método, intenção e as ferramentas certas.
-              </span>
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="mt-8 flex items-center gap-5">
+            <motion.div variants={fadeUp} className="mt-10 flex items-center gap-5">
               <motion.a
                 href="/mergulho"
                 onClick={() => trackEvent('click_cta_hero', { location: 'hero', label: 'Fazer Diagnóstico' })}
@@ -388,7 +333,11 @@ export default function IndexDesejo() {
 
         {/* ── Fase 2: waterline full-width + dois blocos de texto ── */}
         {!isMobile && !prefersReduced && (
-          <>
+          <motion.div
+            className="absolute inset-0 z-10"
+            style={{ opacity: phase2Op }}
+            initial={false}
+          >
             {/* Linha d'água — cruza toda a seção, acima da foto */}
             <motion.div
               aria-hidden="true"
@@ -482,7 +431,7 @@ export default function IndexDesejo() {
                 ))}
               </div>
             </div>
-          </>
+          </motion.div>
         )}
 
       </section>
@@ -1474,20 +1423,7 @@ export default function IndexDesejo() {
         </div>
       </footer>
 
-      {/* WhatsApp flutuante — mantido */}
-      <a
-        href="https://wa.me/5511954388833"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Fale pelo WhatsApp (abre em nova aba)"
-        onClick={() => trackEvent('click_whatsapp', { location: 'floating_button' })}
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-lg hover:scale-110 transition-transform duration-300"
-        style={{ backgroundColor: "#25D366" }}
-      >
-        <svg viewBox="0 0 24 24" fill="white" className="w-7 h-7">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-      </a>
+      {/* WhatsApp flutuante removido — aparece somente na última página (Mergulho) */}
 
     </div>
   );
