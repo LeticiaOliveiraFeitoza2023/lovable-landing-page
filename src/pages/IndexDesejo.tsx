@@ -289,23 +289,35 @@ export default function IndexDesejo() {
           style={{ opacity: prefersReduced ? 1 : photoOp }}
         >
           <motion.img src={heroPhoto} alt="" aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: "18% 42%" }}
             animate={prefersReduced ? {} : { scale: [1, 1.07] }}
             transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
           />
-          {/* Overlay lateral — contraste no texto esquerdo, iceberg visível à direita */}
+          {/* Overlay creme leve — iceberg respira à direita, texto legível à esq */}
           <div aria-hidden="true" className="absolute inset-0" style={{
             background:
-              "linear-gradient(to right, rgba(0,0,0,0.46) 0%, rgba(0,0,0,0.18) 42%, transparent 62%), " +
-              "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, transparent 28%)",
+              "linear-gradient(to right, rgba(240,237,232,0.96) 0%, rgba(240,237,232,0.90) 28%, rgba(240,237,232,0.50) 42%, rgba(240,237,232,0.10) 56%, transparent 70%)",
           }} />
         </motion.div>
 
-        {/* ── Fundo sólido neutro — entra na Fase 2 ── */}
+        {/* ── Fundo da Fase 2 — foto underwater + overlay creme ── */}
         {!prefersReduced && (
-          <motion.div aria-hidden="true" className="absolute inset-0 z-[1] bg-[#f0ede8]"
+          <motion.div aria-hidden="true" className="absolute inset-0 z-[1]"
             style={{ opacity: phase2BgOp }}
-          />
+          >
+            {/* Base sólida para cobrir a foto da Fase 1 */}
+            <div className="absolute inset-0 bg-[#e8e5e0]" />
+            {/* Foto: iceberg empurrado à direita, mostrando parte submersa */}
+            <img src={heroPhoto} alt="" aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ objectPosition: "18% 60%" }}
+            />
+            {/* Overlay creme leve — apenas para o texto esquerdo */}
+            <div className="absolute inset-0" style={{
+              background: "linear-gradient(to right, rgba(240,237,232,0.94) 0%, rgba(240,237,232,0.88) 28%, rgba(240,237,232,0.50) 42%, rgba(240,237,232,0.10) 56%, transparent 70%)"
+            }} />
+          </motion.div>
         )}
 
         {/* ── Fase 1: texto hero à esquerda, tudo branco ── */}
@@ -319,18 +331,28 @@ export default function IndexDesejo() {
             className="max-w-[640px]"
           >
             <motion.p variants={fadeUp}
-              className="text-[10px] uppercase tracking-[0.26em] font-medium text-white/50 mb-5 font-mono"
+              className="text-[10px] uppercase tracking-[0.26em] font-medium text-stone-400 mb-5 font-mono"
             >
               Reconhecimento de fase
             </motion.p>
 
-            <h1 className="text-[clamp(1.9rem,3.6vw,3.2rem)] leading-[1.1] font-semibold tracking-tight text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.5)]">
+            <h1 className="text-[clamp(1.9rem,3.6vw,3.2rem)] leading-[1.1] font-bold tracking-tight text-stone-900">
               {([
                 <span key="l1">Empresas que crescem</span>,
-                <span key="l2">sem travar{" "}
-                  <span className="font-serif italic font-normal">têm operações</span>
+                <span key="l2">
+                  <span className="text-primary relative inline-block">
+                    sem travar
+                    <motion.span aria-hidden="true"
+                      className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-primary origin-left"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.65, delay: 0.92, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
+                    />
+                  </span>
+                  {" "}
+                  <span className="font-serif italic font-normal text-stone-700">têm operações</span>
                 </span>,
-                <span key="l3" className="font-serif italic font-normal">
+                <span key="l3" className="font-serif italic font-normal text-stone-700">
                   que trabalham por elas.
                 </span>,
               ] as React.ReactNode[]).map((line, i) => (
@@ -343,15 +365,15 @@ export default function IndexDesejo() {
             </h1>
 
             <motion.p variants={fadeUp}
-              className="mt-6 max-w-[460px] text-[14.5px] md:text-[15.5px] text-white/70 leading-[1.8]"
+              className="mt-6 max-w-[460px] text-[14.5px] md:text-[15.5px] text-stone-600 leading-[1.8]"
             >
               As melhores operações não surgem por acaso.{" "}
-              <span className="text-white font-medium">
+              <span className="text-stone-900 font-semibold">
                 Elas são construídas com método, intenção e as ferramentas certas.
               </span>
             </motion.p>
 
-            <motion.div variants={fadeUp} className="mt-8">
+            <motion.div variants={fadeUp} className="mt-8 flex items-center gap-5">
               <motion.a
                 href="/mergulho"
                 onClick={() => trackEvent('click_cta_hero', { location: 'hero', label: 'Fazer Diagnóstico' })}
@@ -364,126 +386,103 @@ export default function IndexDesejo() {
           </motion.div>
         </motion.div>
 
-        {/* ── Fase 2: texto animado (esq) + mockup com vídeo (dir) ── */}
+        {/* ── Fase 2: waterline full-width + dois blocos de texto ── */}
         {!isMobile && !prefersReduced && (
-          <motion.div
-            className="absolute inset-0 z-10 flex items-center px-10 lg:px-16 pointer-events-none"
-            style={{ opacity: phase2Op, y: phase2Y }}
-          >
-            <div className="w-full max-w-[1160px] mx-auto flex items-center gap-12 lg:gap-16">
-
-              {/* ── Esquerda: textos animados — tudo branco ── */}
-              <div className="flex-1 min-w-0 space-y-7">
-
-                {/* Acima da linha d'água */}
-                <div>
-                  <motion.p
-                    animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                    transition={{ duration: 0.55, delay: 0.0, ease }}
-                    className="text-[9px] uppercase tracking-[0.28em] font-mono text-stone-400 mb-2.5"
-                  >
-                    O que todos veem
-                  </motion.p>
-                  <motion.p
-                    animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                    transition={{ duration: 0.6, delay: 0.08, ease }}
-                    className="text-[1.8rem] font-semibold text-stone-900 leading-[1.2] mb-3"
-                  >
-                    A ponta do iceberg.{" "}
-                    <span className="font-serif italic font-normal text-stone-500">O sintoma.</span>
-                  </motion.p>
-                  <div className="space-y-1.5">
-                    {["Atraso nas entregas", "Equipe apagando incêndio", "Retrabalho constante", "Dados que não chegam a tempo"].map((item, i) => (
-                      <motion.p key={item}
-                        animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
-                        transition={{ duration: 0.45, delay: 0.16 + i * 0.07, ease }}
-                        className="flex items-center gap-2.5 text-[13px] text-stone-500"
-                      >
-                        <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />{item}
-                      </motion.p>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Divisor */}
-                <motion.div
-                  animate={phase2Active ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
-                  transition={{ duration: 0.55, delay: 0.46, ease }}
-                  className="h-px bg-gradient-to-r from-stone-300 via-stone-200 to-transparent origin-left"
-                />
-
-                {/* Abaixo da linha d'água */}
-                <div>
-                  <motion.p
-                    animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                    transition={{ duration: 0.55, delay: 0.52, ease }}
-                    className="text-[9px] uppercase tracking-[0.28em] font-mono text-primary/80 mb-2.5"
-                  >
-                    O que a FeelFlow vê
-                  </motion.p>
-                  <motion.p
-                    animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                    transition={{ duration: 0.6, delay: 0.58, ease }}
-                    className="text-[1.8rem] font-semibold text-stone-900 leading-[1.2] mb-3"
-                  >
-                    O que está debaixo.{" "}
-                    <span className="font-serif italic font-normal text-stone-500">A estrutura.</span>
-                  </motion.p>
-                  <div className="space-y-1.5">
-                    {["Processos sem dono definido", "Informação presa em silos", "Sistemas que não se comunicam", "Gargalos invisíveis que travam o crescimento"].map((item, i) => (
-                      <motion.p key={item}
-                        animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
-                        transition={{ duration: 0.45, delay: 0.64 + i * 0.07, ease }}
-                        className="flex items-center gap-2.5 text-[13px] text-stone-500"
-                      >
-                        <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />{item}
-                      </motion.p>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
-
-              {/* ── Direita: browser mockup ── */}
+          <>
+            {/* Linha d'água — cruza toda a seção, acima da foto */}
+            <motion.div
+              aria-hidden="true"
+              className="absolute left-0 right-0 z-20 pointer-events-none"
+              style={{ top: "28%" }}
+              animate={phase2Active ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              {/* A linha em si — desenha da esquerda para a direita */}
               <motion.div
-                animate={phase2Active ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.97, y: 12 }}
-                transition={{ duration: 0.65, delay: 0.1, ease }}
-                className="w-[52%] shrink-0 pointer-events-auto"
+                className="h-px bg-primary origin-left"
+                animate={phase2Active ? { scaleX: 1 } : { scaleX: 0 }}
+                transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
+              />
+              {/* Shimmer — luz percorrendo a linha como reflexo na água */}
+              <motion.div
+                className="absolute -top-[3px] h-[7px] w-[120px] rounded-full"
+                style={{
+                  background: "linear-gradient(90deg, transparent 0%, rgba(100,210,150,0.8) 40%, rgba(180,255,200,0.95) 50%, rgba(100,210,150,0.8) 60%, transparent 100%)"
+                }}
+                animate={phase2Active ? { x: ["-120px", "1600px"] } : { x: "-120px" }}
+                transition={{ duration: 3.4, delay: 1.6, repeat: phase2Active ? Infinity : 0, ease: "linear" }}
+              />
+              {/* Label */}
+              <motion.span
+                className="absolute font-mono text-[8px] tracking-[0.22em] uppercase text-primary bg-[rgba(240,237,232,0.85)] px-2 py-0.5 rounded-sm"
+                style={{ bottom: "6px", left: "64px" }}
+                animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: -3 }}
+                transition={{ duration: 0.4, delay: 1.3, ease }}
               >
-                <div className="rounded-xl overflow-hidden shadow-[0_20px_64px_rgba(0,0,0,0.14)] border border-stone-200/80">
-                  {/* Chrome do browser */}
-                  <div className="bg-[#1e2024] h-8 flex items-center gap-3 px-3.5 border-b border-white/[0.06]">
-                    <div className="flex gap-1.5 shrink-0">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]/80" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]/80" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]/80" />
-                    </div>
-                    <div className="flex-1 bg-[#2a2d33] rounded-[4px] h-[18px] flex items-center px-2.5">
-                      <span className="text-[9px] text-white/22 font-mono tracking-wide">feelflow.com.br/diagnóstico</span>
-                    </div>
-                  </div>
-                  {/* Vídeo — bg neutro, clip no canto inferior-direito para cobrir watermark */}
-                  <div className="aspect-video bg-[#e8e4df] overflow-hidden relative">
-                    <video
-                      ref={videoRef}
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover scale-[1.18]"
-                      style={{ objectPosition: "center 20%" }}
-                    >
-                      <source src={icebergVideo} type="video/mp4" />
-                    </video>
-                    {/* Vinheta suave nas bordas — emoldura naturalmente e encobre a watermark */}
-                    <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{
-                      boxShadow: "inset 0 0 40px 12px rgba(14,12,10,0.45)",
-                    }} />
-                  </div>
-                </div>
-              </motion.div>
+                linha d'água
+              </motion.span>
+            </motion.div>
 
+            {/* Texto acima da linha d'água */}
+            <div className="absolute z-10 left-10 lg:left-16 max-w-[400px]" style={{ top: "80px" }}>
+              <motion.p
+                animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                transition={{ duration: 0.55, delay: 0.0, ease }}
+                className="text-[9px] uppercase tracking-[0.28em] font-mono text-stone-400 mb-2.5"
+              >
+                O que todos veem
+              </motion.p>
+              <motion.p
+                animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                transition={{ duration: 0.6, delay: 0.08, ease }}
+                className="text-[1.6rem] font-semibold text-stone-900 leading-[1.2] mb-3"
+              >
+                A ponta do iceberg.{" "}
+                <span className="font-serif italic font-normal text-stone-500">O sintoma.</span>
+              </motion.p>
+              <div className="space-y-1.5">
+                {["Atraso nas entregas", "Equipe apagando incêndio", "Retrabalho constante", "Dados que não chegam a tempo"].map((item, i) => (
+                  <motion.p key={item}
+                    animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
+                    transition={{ duration: 0.45, delay: 0.16 + i * 0.07, ease }}
+                    className="flex items-center gap-2.5 text-[13px] text-stone-500"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />{item}
+                  </motion.p>
+                ))}
+              </div>
             </div>
-          </motion.div>
+
+            {/* Texto abaixo da linha d'água */}
+            <div className="absolute z-10 left-10 lg:left-16 max-w-[400px]" style={{ top: "calc(28% + 24px)" }}>
+              <motion.p
+                animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                transition={{ duration: 0.55, delay: 0.52, ease }}
+                className="text-[9px] uppercase tracking-[0.28em] font-mono text-primary/80 mb-2.5"
+              >
+                O que a FeelFlow vê
+              </motion.p>
+              <motion.p
+                animate={phase2Active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                transition={{ duration: 0.6, delay: 0.58, ease }}
+                className="text-[1.6rem] font-semibold text-stone-900 leading-[1.2] mb-3"
+              >
+                O que está debaixo.{" "}
+                <span className="font-serif italic font-normal text-stone-500">A estrutura.</span>
+              </motion.p>
+              <div className="space-y-1.5">
+                {["Processos sem dono definido", "Informação presa em silos", "Sistemas que não se comunicam", "Gargalos invisíveis que travam o crescimento"].map((item, i) => (
+                  <motion.p key={item}
+                    animate={phase2Active ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
+                    transition={{ duration: 0.45, delay: 0.64 + i * 0.07, ease }}
+                    className="flex items-center gap-2.5 text-[13px] text-stone-500"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />{item}
+                  </motion.p>
+                ))}
+              </div>
+            </div>
+          </>
         )}
 
       </section>
