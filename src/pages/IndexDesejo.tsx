@@ -625,7 +625,7 @@ export default function IndexDesejo() {
             variants={stagger}
           >
             <motion.div variants={fadeUp} className="mb-16">
-              <Label>O que acontece agora</Label>
+              <Label>Etapa 1 · O diagnóstico</Label>
               <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance max-w-2xl">
                 O{" "}
                 <span className="font-serif italic font-normal text-primary-deep">Mergulho Operacional™</span>
@@ -1066,89 +1066,60 @@ export default function IndexDesejo() {
               </h2>
             </motion.div>
 
-            {/* ── Bento O que muda ── */}
-            <motion.div variants={fadeUp}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                {/* Card hero — Quando você sai de férias (wide, dark) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="relative lg:col-span-2 rounded-2xl bg-surface-dark text-background p-8 overflow-hidden"
-                >
-                  <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-primary/12 blur-3xl pointer-events-none" />
-                  <div className="relative z-10">
-                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-background/35 mb-5">Antes → Depois</p>
-                    <p className="text-[13px] text-background/45 line-through mb-2 leading-snug">Quando você sai de férias, a operação sente</p>
-                    <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight text-background mb-6">
-                      Processos que funcionam{" "}
-                      <span className="font-serif italic font-normal text-primary">com ou sem a sua presença</span>
-                    </h3>
+            {/* ── Split Antes → Depois (layout editorial, distinto dos bentos) ── */}
+            <motion.div variants={fadeUp} className="border-y border-border/40 divide-y divide-border/40">
+              {[
+                {
+                  cat: "Liderança",
+                  antes: "Quando você sai de férias, a operação sente",
+                  depois: <>Processos que funcionam <span className="font-serif italic font-normal text-primary-deep">com ou sem a sua presença</span></>,
+                  tags: ["processos padronizados", "responsabilidades definidas", "autonomia da equipe"],
+                },
+                {
+                  cat: "Comercial",
+                  antes: "Cada lead ignorado é uma oportunidade perdida",
+                  depois: <>Cada oportunidade <span className="font-serif italic font-normal text-primary-deep">acompanhada automaticamente</span></>,
+                  tags: ["automação de follow-up", "CRM integrado", "histórico centralizado"],
+                },
+                {
+                  cat: "Operação",
+                  antes: "Urgências tomam o tempo de crescimento",
+                  depois: <>Operação previsível que devolve o <span className="font-serif italic font-normal text-primary-deep">espaço para pensar grande</span></>,
+                  tags: ["prioridades no lugar", "menos urgências", "fundador estratégico"],
+                },
+                {
+                  cat: "Dados & Histórico",
+                  antes: "O histórico da empresa existe só na cabeça das pessoas",
+                  depois: <>Tudo registrado, <span className="font-serif italic font-normal text-primary-deep">acessível e rastreável</span></>,
+                  tags: ["histórico de decisões", "dashboards", "indicadores", "rastreabilidade"],
+                },
+              ].map((row, i) => (
+                <div key={i} className="grid md:grid-cols-[minmax(0,0.8fr)_auto_minmax(0,1.2fr)] gap-5 md:gap-8 items-center py-8 lg:py-10">
+                  {/* Antes */}
+                  <div className="md:pr-2">
+                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink-soft/40 mb-2">Antes</p>
+                    <p className="text-[15px] text-ink-soft/55 line-through decoration-ink-soft/25 leading-snug">{row.antes}</p>
+                  </div>
+                  {/* Seta de transformação */}
+                  <div className="flex md:justify-center">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-deep shrink-0">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="rotate-90 md:rotate-0">
+                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Depois */}
+                  <div>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-primary-deep/65 mb-2">{row.cat}</p>
+                    <h3 className="text-[1.3rem] lg:text-[1.5rem] font-semibold leading-tight tracking-tight text-ink mb-3.5">{row.depois}</h3>
                     <div className="flex flex-wrap gap-2">
-                      {["processos padronizados", "responsabilidades definidas", "autonomia da equipe"].map(s => (
-                        <span key={s} className="text-[12px] px-3 py-1.5 rounded-full border border-background/14 text-background/65">{s}</span>
+                      {row.tags.map(t => (
+                        <span key={t} className="text-[12px] px-3 py-1.5 rounded-full bg-background border border-border/50 text-ink/60">{t}</span>
                       ))}
                     </div>
                   </div>
-                </motion.div>
-
-                {/* Card — Leads + Operação (green accent, tall double-card) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="md:row-span-2 lg:row-span-2 rounded-2xl bg-primary/[0.07] border border-primary/18 p-8 overflow-hidden"
-                >
-                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/60 mb-5">Comercial</p>
-                  <p className="text-[12px] text-ink-soft/40 line-through mb-2">Cada lead ignorado é uma oportunidade perdida</p>
-                  <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight mb-5">
-                    Cada oportunidade{" "}
-                    <span className="font-serif italic font-normal text-primary-deep">acompanhada automaticamente</span>
-                  </h3>
-                  <div className="space-y-2.5 mb-8">
-                    {["Automação de follow-up", "CRM integrado", "Histórico centralizado"].map(s => (
-                      <div key={s} className="flex items-center gap-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary/65 shrink-0" />
-                        <span className="text-[13px] text-ink/75">{s}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="w-full h-px bg-primary/15 my-6" />
-                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/60 mb-5">Operação</p>
-                  <p className="text-[12px] text-ink-soft/40 line-through mb-2">Urgências tomam o tempo de crescimento</p>
-                  <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight mb-5">
-                    Operação previsível que devolve o{" "}
-                    <span className="font-serif italic font-normal text-primary-deep">espaço para pensar grande</span>
-                  </h3>
-                  <div className="space-y-2.5">
-                    {["Prioridades no lugar", "Menos urgências", "Fundador estratégico"].map(s => (
-                      <div key={s} className="flex items-center gap-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary/65 shrink-0" />
-                        <span className="text-[13px] text-ink/75">{s}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Card — Histórico espalhado (white, wide) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="lg:col-span-2 rounded-2xl bg-background border border-border/50 p-8 shadow-soft overflow-hidden"
-                >
-                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50 mb-5">Dados & Histórico</p>
-                  <p className="text-[12px] text-ink-soft/40 line-through mb-2">O histórico da empresa existe só na cabeça das pessoas</p>
-                  <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight mb-5">
-                    Tudo registrado,{" "}
-                    <span className="font-serif italic font-normal text-primary-deep">acessível e rastreável</span>
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["histórico de decisões", "dashboards", "indicadores", "rastreabilidade"].map(s => (
-                      <span key={s} className="text-[12px] px-3 py-1.5 rounded-full bg-secondary/70 border border-border/40 text-ink/60">{s}</span>
-                    ))}
-                  </div>
-                </motion.div>
-
-              </div>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
         </div>
@@ -1166,7 +1137,7 @@ export default function IndexDesejo() {
             variants={stagger}
           >
             <motion.div variants={fadeUp} className="mb-20">
-              <Label>Método Clarear™</Label>
+              <Label>Etapa 2 · A implementação — Método Clarear™</Label>
               <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance max-w-xl">
                 Um caminho claro para{" "}
                 <span className="font-serif italic font-normal text-primary-deep">sair do improviso</span>
@@ -1237,6 +1208,44 @@ export default function IndexDesejo() {
             </motion.div>
           </motion.div>
         </div>
+      </section>
+
+      <Rule />
+
+      {/* ══════════════ CTA INTERMEDIÁRIO — captura quem já decidiu ══════════════
+          Único CTA entre o hero e o fechamento. Card verde-tingido, compacto,
+          posicionado após o método (visitante já entendeu o caminho completo).
+      */}
+      <section className="py-14 lg:py-20 px-6 lg:px-10 bg-background">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="rounded-3xl bg-primary/[0.06] border border-primary/20 px-8 py-9 lg:px-12 lg:py-11 flex flex-col md:flex-row md:items-center md:justify-between gap-7">
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/65 mb-3">Reconheceu a sua operação aqui?</p>
+              <h3 className="text-[clamp(1.4rem,2.6vw,1.9rem)] font-semibold leading-tight tracking-tight text-ink max-w-md">
+                O diagnóstico leva{" "}
+                <span className="font-serif italic font-normal text-primary-deep">menos de 5 minutos.</span>
+              </h3>
+            </div>
+            <motion.a
+              href="/mergulho"
+              onClick={() => trackEvent('click_cta_mid', { location: 'cta_mid', label: 'Fazer Diagnóstico' })}
+              whileHover={prefersReduced ? {} : { scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="group btn-shine inline-flex items-center justify-center gap-2.5 bg-primary text-white px-7 py-4 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow shrink-0 self-start md:self-auto"
+            >
+              Fazer Diagnóstico
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform duration-300 group-hover:translate-x-0.5">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </motion.a>
+          </div>
+        </motion.div>
       </section>
 
       <Rule />
@@ -1328,39 +1337,42 @@ export default function IndexDesejo() {
           Elemento de exclusividade para posicionamento premium.
           Subtext que valoriza quem chegou até aqui.
       */}
-      <section id="cta-final" className="relative py-28 lg:py-40 px-6 lg:px-10 bg-secondary/50">
-        <div className="max-w-4xl mx-auto">
+      <section id="cta-final" className="relative py-28 lg:py-40 px-6 lg:px-10 bg-surface-dark text-background overflow-hidden">
+        {/* Atmosfera — glow verde, mesma linguagem da seção de stats */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 w-[700px] h-[700px] bg-primary/12 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
           >
-            <motion.div variants={fadeUp}>
-              <Label>Próximo passo</Label>
-            </motion.div>
+            <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.22em] font-medium text-background/40 mb-5 font-mono">
+              Próximo passo
+            </motion.p>
 
             {/* Headline de desejo — não de alívio de dor */}
             <motion.h2
               variants={fadeUp}
-              className="text-[clamp(2.2rem,6vw,4.5rem)] font-semibold leading-[1.0] text-ink text-balance tracking-tight"
+              className="text-[clamp(2.2rem,6vw,4.5rem)] font-semibold leading-[1.0] text-background text-balance tracking-tight"
             >
               Chegou a hora da sua operação{" "}
-              <span className="font-serif italic font-normal text-primary-deep">trabalhar por você.</span>
+              <span className="font-serif italic font-normal text-primary">trabalhar por você.</span>
             </motion.h2>
 
             {/* Subtext que valoriza o leitor e posiciona a FeelFlow como parceiro de crescimento */}
-            <motion.p variants={fadeUp} className="mt-6 text-[17px] text-ink/70 leading-[1.75] max-w-lg">
+            <motion.p variants={fadeUp} className="mt-6 text-[17px] text-background/65 leading-[1.75] max-w-lg">
               As empresas que chegam até aqui já deram o passo mais importante: reconheceram que operação estruturada é vantagem competitiva, não custo.
             </motion.p>
 
             {/* MUDANÇA 10 — Elemento de exclusividade */}
             <motion.div
               variants={fadeUp}
-              className="mt-8 inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-primary/20 bg-primary/[0.06]"
+              className="mt-8 inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-primary/25 bg-primary/[0.10]"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-primary/70 shrink-0" />
-              <p className="text-[12px] text-primary-deep/80 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+              <p className="text-[12px] text-background/80 font-medium">
                 A FeelFlow acompanha no máximo 8 projetos por trimestre para garantir atenção integral a cada empresa.
               </p>
             </motion.div>
@@ -1377,7 +1389,7 @@ export default function IndexDesejo() {
                   Iniciar meu Mergulho Operacional
                 </motion.a>
               </div>
-              <p className="text-[12px] text-ink-soft/50 font-mono tracking-wide">
+              <p className="text-[12px] text-background/45 font-mono tracking-wide">
                 Perguntas rápidas&nbsp;•&nbsp;Sem burocracia&nbsp;•&nbsp;Menos de 5 minutos
               </p>
             </motion.div>
