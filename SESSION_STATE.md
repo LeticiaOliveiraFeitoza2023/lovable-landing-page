@@ -1,5 +1,5 @@
 # SESSION STATE — Landing Page FeelFlow
-**Última sessão:** 2026-06-03 (parte 5 — implementação Blocos 1-4 do design pass na v2; ver `DESIGN_PASS_PLAN.md`)
+**Última sessão:** 2026-06-04 (refinamentos de Letícia + elevação de UI na v2; ver `DESIGN_PASS_PLAN.md`)
 **Repo:** `feelflow-solutions/feelflow-landing` · **Local:** `~/Desktop/Projetos/LandingPage_FeelFlow`
 
 > Caderno de continuidade da LP (frente SEPARADA do CRM). Compacto, 1 página.
@@ -51,9 +51,9 @@ Landing Page de aquisição da FeelFlow ("Marketing de Desejo"). SPA Vite + Reac
 - Processo comercial: LP capta → Letícia recebe o bastão (1º contato) → Felipe Rocha conduz.
 
 ## Próximos 3 itens prioritários
-1. **Bloco 5 — responsividade (mobile)** na v2/3031: hero scroll-driven no mobile, bentos, touch targets, breakpoints (Fernanda+Daniel+Lucas Matos QA). É o que falta antes do deploy.
-2. **Revisão final de Letícia** da página inteira (3031) — incl. as 3 palavras da Solução (Mergulho/Estrutura/Fluxo) e da stats (Clareza/Leveza/Comando), ajustáveis.
-3. **Portar v2 → repo real + deploy** (gate) + Meta Pixel ID + finalizar site.
+1. **Revisão final de Letícia** da página inteira (hard-refresh na 3031) — UI elevada nas 5 seções; apontar o que ainda pedir ajuste.
+2. **Bloco 5 — responsividade (mobile)** na v2/3031 (hero scroll-driven, bentos, touch targets, breakpoints) — ainda **NÃO feito**, é o que falta antes do deploy.
+3. **Trocar o número do WhatsApp** (placeholder `wa.me/5500000000000`) + Meta Pixel ID; depois **portar v2 → repo real + deploy** (gate).
 
 ## Blocos 1-4 do design pass — FEITOS na v2 (2026-06-03, sem deploy)
 - **B1 a11y:** contraste→AA (token `--ink-soft` escurecido p/ 220 13% 36%; labels mono pequenos em opacidade cheia); `:focus-visible` de alto contraste na `index.css`.
@@ -62,9 +62,24 @@ Landing Page de aquisição da FeelFlow ("Marketing de Desejo"). SPA Vite + Reac
 - **B4 consolidação:** removida a seção "Cenários" (−1,6 viewports → ~16); mini-gráfico resgatado no header de "O que muda" (2 colunas); stats sem número → Clareza/Leveza/Comando.
 - **Extra:** Solução com layout 3-colunas da stats → Mergulho · Estrutura · Fluxo.
 
+## Refinamentos + Elevação de UI (sessão 2026-06-04) — na v2, sem deploy
+Após os Blocos 1-4, Letícia fez várias rodadas de ajuste fino e o time elevou a UI. Feitos:
+- **Reestruturação do miolo (Valentina):** cortada a stats redundante "O que a estrutura muda"; "O que fazemos" (escuro/mergulho) movido pra logo após Sinais; narrativa de 6 batidas. Página ~12,5 viewports.
+- **Hero:** imagem pra direita (object-position invertido) + headline 3 linhas + **tudo bold** (sem serif-italic); alinhamento global em 40px (nav+hero+seções); microcopy "Online • Rápido • Sem burocracia".
+- **Rodapé** integrado (sem borda dura, compacto, logo+links simétrico à nav, © fora do float).
+- **WhatsApp flutuante** discreto branded (matcha, logo do Zap) — ⚠️ **número placeholder, trocar pelo real**.
+- **FAQ** em 2 colunas (título fixo à esquerda + accordion à direita) — Letícia amou, virou referência de tratamento.
+- **Elevação de UI (Daniel)** — matcha como acento estratégico, cards variados, ícones em chip:
+  - Sinais → 2 colunas + 6 sinais com ícone em chip matcha.
+  - Como começa → número grande matcha + frase final em 3 selos com check.
+  - O que construímos → **Portal do Cliente** (não OS interno): header tintado, progresso+milestones, doc "Para aprovar", msg da equipe; sem nome fictício. Quote repetitiva cortada.
+  - O que muda → **transformação do dono** (Seu dia/papel/cabeça/tempo) em cards com ícone (sol/pessoa/lâmpada/relógio); removido o "antes".
+  - CTA final → motivo abstrato de correnteza + 2º glow (premium com vida).
+- **Aprendizado técnico:** pra screenshot das seções de baixo, neutralizar via JS a dobra sticky de 240vh do hero (senão o scroll-jacking captura o hero). O 240vh do hero é tema de UX a revisar no mobile (Bloco 5).
+
 ## Comandos de retomada
 ```
-cd ~/Desktop/Projetos/LandingPage_FeelFlow
-npm install && npm run dev    # Vite
-# produção: Vercel
+cd ~/Desktop/Projetos/LandingPage_FeelFlow_v2
+./node_modules/.bin/vite --port 3031 --strictPort   # a v2 (cópia de trabalho, sem deploy)
+# original: ~/Desktop/Projetos/LandingPage_FeelFlow (npm run dev)
 ```
