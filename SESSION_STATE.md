@@ -1,5 +1,5 @@
 # SESSION STATE — Landing Page FeelFlow
-**Última sessão:** 2026-06-03 (Trilha B — reescrita de copy no desejo, na cópia v2/3031)
+**Última sessão:** 2026-06-03 (parte 4 — pass de design: direção criativa + UX/A11y + plano aprovado, ver `DESIGN_PASS_PLAN.md`)
 **Repo:** `feelflow-solutions/feelflow-landing` · **Local:** `~/Desktop/Projetos/LandingPage_FeelFlow`
 
 > Caderno de continuidade da LP (frente SEPARADA do CRM). Compacto, 1 página.
@@ -51,9 +51,9 @@ Landing Page de aquisição da FeelFlow ("Marketing de Desejo"). SPA Vite + Reac
 - Processo comercial: LP capta → Letícia recebe o bastão (1º contato) → Felipe Rocha conduz.
 
 ## Próximos 3 itens prioritários
-1. **Pass de Direção Criativa + UX/UI/A11y/Responsividade** na cópia v2/3031 (Valentina, Laura, Daniel, Fernanda, Lucas Matos) — ANTES do deploy.
-2. Revisão final de Letícia da página inteira (3031) → portar v2 pro repo real + deploy (gate).
-3. Instalar Meta Pixel (ID + snippet) + finalizar site (destrava follow-up com link no CRM).
+1. **Implementar Blocos 1+2** do `DESIGN_PASS_PLAN.md` na v2/3031: passada de contraste→AA + foco visível (Daniel+Fernanda) e padronizar rótulo do CTA + CTA persistente na nav (Laura+Fernanda). Quick wins aprovados.
+2. **Bloco 3 — jornada tonal** (final luminoso + pico escuro no meio + variar layouts dos cards) — Valentina+Daniel+Fernanda.
+3. **Bloco 4 — consolidação** (fundir Cenários/O que muda/O que construímos; stats com fonte ou reframe) com gate de conteúdo; depois **Bloco 5 — responsividade** → portar v2→repo real + deploy.
 
 ## Comandos de retomada
 ```
