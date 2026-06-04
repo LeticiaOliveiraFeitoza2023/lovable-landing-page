@@ -38,6 +38,14 @@
 **Decisão:** Link do site só entra em follow-up no CRM **depois** do site finalizado. A finalização da LP é dependência desse fluxo.
 **Implementado:** N/A (regra). Ver `feelflow-os/crm/DECISIONS.md` D-019.
 
+### D-005 — Trilha B: reescrita em cópia duplicada, sem deploy até aprovação
+**Data:** 2026-06-03 | **Status:** `ativa` | **Responsável:** Letícia + Gabriela (Growth)
+**Contexto:** A Trilha B (LP no desejo, aplicando o Sistema de Mensagem / P0) exigiu reescrever a `IndexDesejo.tsx`. Risco de mexer na LP no ar.
+**Decisão:** Trabalhar numa **cópia duplicada** do projeto (`~/Desktop/Projetos/LandingPage_FeelFlow_v2`, sem `.git`, porta **3031**, node_modules próprio via `bun`). Original intacta (porta 3030/produção). **Nenhum commit/deploy** das mudanças até aprovação final de Letícia. Quando aprovado: portar os arquivos alterados pro repo real e deployar (passo com gate).
+**Processo de copy (governança):** toda copy de LP passa por **Ana Valente (Content) → Gabriela (Growth, revisão) → aprovação de Letícia (gate, saída externa) → Fernanda (Frontend) → verificação no preview**. Nunca aplicar copy crua/sugerida sem revisão de contexto.
+**Descartado:** branch git/worktree (Letícia preferiu pasta duplicada); editar direto na LP no ar (risco).
+**Implementado:** cópia v2 com 7 seções de copy revisadas (Hero, Sinais, O que muda, Solução, Etapas, FAQ, CTA final). Aguarda pass de Direção Criativa + UX/UI/A11y/Responsividade antes do deploy.
+
 ---
 
 ## 📋 Template para nova decisão
