@@ -1,5 +1,5 @@
 # SESSION STATE — Landing Page FeelFlow
-**Última sessão:** 2026-06-03 (parte 4 — pass de design: direção criativa + UX/A11y + plano aprovado, ver `DESIGN_PASS_PLAN.md`)
+**Última sessão:** 2026-06-03 (parte 5 — implementação Blocos 1-4 do design pass na v2; ver `DESIGN_PASS_PLAN.md`)
 **Repo:** `feelflow-solutions/feelflow-landing` · **Local:** `~/Desktop/Projetos/LandingPage_FeelFlow`
 
 > Caderno de continuidade da LP (frente SEPARADA do CRM). Compacto, 1 página.
@@ -51,9 +51,16 @@ Landing Page de aquisição da FeelFlow ("Marketing de Desejo"). SPA Vite + Reac
 - Processo comercial: LP capta → Letícia recebe o bastão (1º contato) → Felipe Rocha conduz.
 
 ## Próximos 3 itens prioritários
-1. **Implementar Blocos 1+2** do `DESIGN_PASS_PLAN.md` na v2/3031: passada de contraste→AA + foco visível (Daniel+Fernanda) e padronizar rótulo do CTA + CTA persistente na nav (Laura+Fernanda). Quick wins aprovados.
-2. **Bloco 3 — jornada tonal** (final luminoso + pico escuro no meio + variar layouts dos cards) — Valentina+Daniel+Fernanda.
-3. **Bloco 4 — consolidação** (fundir Cenários/O que muda/O que construímos; stats com fonte ou reframe) com gate de conteúdo; depois **Bloco 5 — responsividade** → portar v2→repo real + deploy.
+1. **Bloco 5 — responsividade (mobile)** na v2/3031: hero scroll-driven no mobile, bentos, touch targets, breakpoints (Fernanda+Daniel+Lucas Matos QA). É o que falta antes do deploy.
+2. **Revisão final de Letícia** da página inteira (3031) — incl. as 3 palavras da Solução (Mergulho/Estrutura/Fluxo) e da stats (Clareza/Leveza/Comando), ajustáveis.
+3. **Portar v2 → repo real + deploy** (gate) + Meta Pixel ID + finalizar site.
+
+## Blocos 1-4 do design pass — FEITOS na v2 (2026-06-03, sem deploy)
+- **B1 a11y:** contraste→AA (token `--ink-soft` escurecido p/ 220 13% 36%; labels mono pequenos em opacidade cheia); `:focus-visible` de alto contraste na `index.css`.
+- **B2 consistência:** CTA único "Fazer o diagnóstico" (todos); CTA persistente na nav (surge ao rolar).
+- **B3 jornada tonal:** Solução virou escura (mergulho) e CTA final virou claro/luminoso (fluxo). Stats segue escura.
+- **B4 consolidação:** removida a seção "Cenários" (−1,6 viewports → ~16); mini-gráfico resgatado no header de "O que muda" (2 colunas); stats sem número → Clareza/Leveza/Comando.
+- **Extra:** Solução com layout 3-colunas da stats → Mergulho · Estrutura · Fluxo.
 
 ## Comandos de retomada
 ```

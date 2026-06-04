@@ -32,11 +32,12 @@
 - Hero scroll-driven no mobile (hoje estático <768px) — validar.
 - Breakpoints, touch targets, bentos em telas pequenas. (tráfego pago = mobile)
 
-## Sequência aprovada
-1. **Blocos 1 + 2** (quick wins) — começar por aqui.
-2. Bloco 3 (jornada tonal).
-3. Bloco 4 (consolidação, com gate de conteúdo).
-4. Bloco 5 (responsividade).
+## Sequência aprovada — progresso (2026-06-03)
+1. **Blocos 1 + 2** ✅ FEITOS (contraste→AA, foco visível, CTA único, CTA na nav).
+2. **Bloco 3 (núcleo)** ✅ FEITO (Solução escura/mergulho + CTA final luminoso/fluxo). Restante: variar +layouts (parcial: header de "O que muda" virou 2 colunas com mini-gráfico).
+3. **Bloco 4** ✅ FEITO (fundiu Cenários→O que muda, −1,6 viewports, gráfico resgatado; stats reformulada sem número → Clareza/Leveza/Comando).
+4. **Bloco 5 (responsividade)** ⬜ PENDENTE — próxima sessão (mobile: hero scroll-driven, bentos, touch targets).
++ Extra (pedido de Letícia): Solução ganhou o layout 3-colunas da stats (Mergulho · Estrutura · Fluxo).
 Cada bloco com gate de Letícia antes de portar v2 → repo real + deploy.
 
 ## Decisões de Letícia ainda abertas (resolver nos blocos)
