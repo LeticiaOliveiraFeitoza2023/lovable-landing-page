@@ -13,6 +13,22 @@ html {
   html { scroll-behavior: auto; }
 }
 
+/* Bloco 5 — âncoras (#sinais, #faq…) não ficam atrás da nav fixa (76px) ao navegar/skip-link */
+[id] {
+  scroll-margin-top: 88px;
+}
+
+/* ─── Foco visível acessível (A11y) — anel de alto contraste em qualquer fundo ─── */
+:focus-visible {
+  outline: 2px solid hsl(158 64% 38%);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* mostra o anel só no teclado, não no clique de mouse */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -65,7 +81,7 @@ html {
 
     /* ─── Semantic aliases ─── */
     --ink:            221 39% 11%;   /* #111827 */
-    --ink-soft:       220 9% 46%;    /* #6B7280 */
+    --ink-soft:       220 13% 36%;   /* escurecido p/ contraste AA (era #6B7280) */
     --surface:        150 8% 97%;
     --surface-elevated: 0 0% 100%;
     --surface-dark:   215 30% 7%;    /* near #0d1117 */

@@ -46,7 +46,7 @@ const fadeIn = {
 
 /* ─── Label chip ─── */
 const Label = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-[11px] uppercase tracking-[0.22em] font-medium text-ink-soft/55 mb-5 font-mono">
+  <p className="text-[11px] uppercase tracking-[0.22em] font-medium text-ink-soft/72 mb-5 font-mono">
     {children}
   </p>
 );
@@ -73,7 +73,7 @@ function FaqItem({ q, a, id }: { q: string; a: string; id: string }) {
           {q}
         </span>
         <span className={`shrink-0 w-5 h-5 flex items-center justify-center transition-transform duration-300 ${open ? "rotate-180" : ""}`}>
-          <ChevronDown className="w-4 h-4 text-ink-soft/50" />
+          <ChevronDown className="w-4 h-4 text-ink-soft" />
         </span>
       </button>
       <div
@@ -155,6 +155,7 @@ function AnimatedNumber({
    ═══════════════════════════════════════════════════ */
 export default function IndexDesejo() {
   const [scrolled,     setScrolled]     = useState(false);
+  const [nearBottom,   setNearBottom]   = useState(false);
   const [isMobile,     setIsMobile]     = useState(false);
   const prefersReduced = useReducedMotion();
 
@@ -167,7 +168,12 @@ export default function IndexDesejo() {
 
   /* ─── Navbar scroll state ─── */
   const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 32));
+  useMotionValueEvent(scrollY, "change", (v) => {
+    setScrolled(v > 32);
+    // Bloco 5 — recolhe o float ao chegar no CTA final/rodapé pra não competir com o CTA nem tapar links
+    const dist = document.body.scrollHeight - (v + window.innerHeight);
+    setNearBottom(dist < 620);
+  });
 
   /* ─── Hero vídeo scroll-driven ───
      Usa scrollY global + transform direta (evita bugs do useScroll target).
@@ -261,11 +267,22 @@ export default function IndexDesejo() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-[76px] flex items-center">
+        <div className="px-6 lg:px-10 h-[76px] flex items-center justify-between">
           <a href="#" className="flex items-center">
             <img src={logo} alt="FeelFlow" className="h-16 w-auto" />
           </a>
-          {/* Navbar limpa — sem CTA, foco no logo (premium) */}
+          {/* CTA persistente — surge ao rolar (Bloco 2) */}
+          <a
+            href="/mergulho"
+            onClick={() => trackEvent('click_cta_nav', { location: 'nav', label: 'Fazer o diagnóstico' })}
+            aria-hidden={!scrolled}
+            tabIndex={scrolled ? 0 : -1}
+            className={`btn-shine inline-flex items-center justify-center gap-2 min-h-[44px] bg-primary text-white px-5 py-2.5 rounded-full text-[13px] font-semibold hover:bg-primary-glow transition-all duration-500 ${
+              scrolled ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
+            }`}
+          >
+            Fazer o diagnóstico
+          </a>
         </div>
       </nav>
 
@@ -287,14 +304,14 @@ export default function IndexDesejo() {
         >
           <motion.img src={heroPhoto} alt="" aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: "18% 42%" }}
+            style={{ objectPosition: "8% 42%" }}
             animate={prefersReduced ? {} : { scale: [1, 1.07] }}
             transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
           />
           {/* Overlay creme leve — iceberg respira à direita, texto legível à esq */}
           <div aria-hidden="true" className="absolute inset-0" style={{
             background:
-              "linear-gradient(to right, rgba(240,237,232,0.96) 0%, rgba(240,237,232,0.90) 28%, rgba(240,237,232,0.50) 42%, rgba(240,237,232,0.10) 56%, transparent 70%)",
+              "linear-gradient(to right, rgba(240,237,232,0.99) 0%, rgba(240,237,232,0.98) 40%, rgba(240,237,232,0.68) 52%, rgba(240,237,232,0.18) 66%, transparent 80%)",
           }} />
         </motion.div>
 
@@ -312,20 +329,20 @@ export default function IndexDesejo() {
               muted playsInline preload="auto"
               poster={heroPhoto}
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ objectPosition: "center center" }}
+              style={{ objectPosition: "10% center" }}
             >
               <source src={heroVideoP2} type="video/mp4" />
             </video>
             {/* Overlay creme leve — apenas para o texto esquerdo */}
             <div className="absolute inset-0" style={{
-              background: "linear-gradient(to right, rgba(240,237,232,0.94) 0%, rgba(240,237,232,0.88) 28%, rgba(240,237,232,0.50) 42%, rgba(240,237,232,0.10) 56%, transparent 70%)"
+              background: "linear-gradient(to right, rgba(240,237,232,0.98) 0%, rgba(240,237,232,0.97) 40%, rgba(240,237,232,0.66) 52%, rgba(240,237,232,0.16) 66%, transparent 80%)"
             }} />
           </motion.div>
         )}
 
         {/* ── Fase 1: texto hero à esquerda, tudo branco ── */}
         <motion.div
-          className="absolute inset-0 z-10 flex flex-col justify-center px-10 lg:px-16 pt-[76px]"
+          className="absolute inset-0 z-10 flex flex-col justify-center px-6 lg:px-10 pt-[76px]"
           style={{ opacity: prefersReduced ? 1 : heroTextOp }}
         >
           <motion.div
@@ -333,15 +350,11 @@ export default function IndexDesejo() {
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } } }}
             className="max-w-[820px]"
           >
-            <h1 className="text-[clamp(2.4rem,4.6vw,4.2rem)] leading-[1.08] font-bold tracking-tight text-stone-900">
+            <h1 className="text-[clamp(2.1rem,4vw,3.5rem)] leading-[1.1] font-bold tracking-tight text-stone-900">
               {([
-                <span key="l1">Empresas que crescem</span>,
-                <span key="l2">sem travar{" "}
-                  <span className="font-serif italic font-normal text-primary-deep">têm operações</span>
-                </span>,
-                <span key="l3" className="font-serif italic font-normal text-primary-deep">
-                  que trabalham por elas.
-                </span>,
+                <span key="l1">Você fez sua empresa crescer.</span>,
+                <span key="l2">A gente faz ela funcionar</span>,
+                <span key="l3">como você imaginou.</span>,
               ] as React.ReactNode[]).map((line, i) => (
                 <motion.span key={i} className="block overflow-hidden pb-1"
                   variants={{ hidden: { opacity: 0, y: 64 }, visible: { opacity: 1, y: 0, transition: { duration: 0.95, ease } } }}
@@ -351,15 +364,20 @@ export default function IndexDesejo() {
               ))}
             </h1>
 
-            <motion.div variants={fadeUp} className="mt-10 flex items-center gap-5">
+            <motion.p variants={fadeUp} className="mt-6 max-w-[560px] text-[clamp(1rem,1.45vw,1.18rem)] text-stone-600 leading-[1.6]">
+              Inteligência operacional pra sua empresa rodar com clareza e leveza, sem depender de você o tempo todo.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className="mt-8 flex flex-col items-start gap-2.5">
               <motion.a
                 href="/mergulho"
-                onClick={() => trackEvent('click_cta_hero', { location: 'hero', label: 'Fazer Diagnóstico' })}
+                onClick={() => trackEvent('click_cta_hero', { location: 'hero', label: 'Fazer o diagnóstico' })}
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-8 py-4 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow"
               >
-                Fazer Diagnóstico
+                Fazer o diagnóstico
               </motion.a>
+              <span className="text-[12px] text-stone-600 font-medium pl-1">Online • Rápido • Sem burocracia.</span>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -367,7 +385,7 @@ export default function IndexDesejo() {
         {/* ── Fase 2: texto cross-fade sincronizado com a descida do vídeo ── */}
         {!isMobile && !prefersReduced && (
           <motion.div
-            className="absolute inset-y-0 left-10 lg:left-16 z-10 flex items-center pointer-events-none"
+            className="absolute inset-y-0 left-6 lg:left-10 z-10 flex items-center pointer-events-none"
             style={{ opacity: phase2Op }}
             initial={false}
           >
@@ -375,7 +393,7 @@ export default function IndexDesejo() {
 
               {/* Superfície — o sintoma (entra e permanece) */}
               <div>
-                <p className="text-[11px] uppercase tracking-[0.3em] font-mono text-stone-500 mb-3">
+                <p className="text-[11px] uppercase tracking-[0.3em] font-mono text-stone-600 mb-3">
                   O que todos veem
                 </p>
                 <p className="text-[2.1rem] font-bold text-stone-900 leading-[1.12] tracking-tight mb-3.5">
@@ -383,7 +401,7 @@ export default function IndexDesejo() {
                   <span className="font-serif italic font-normal text-stone-600">O sintoma.</span>
                 </p>
                 <div className="space-y-1.5">
-                  {["Atraso nas entregas", "Equipe apagando incêndio", "Retrabalho constante", "Dados que não chegam a tempo"].map((item) => (
+                  {["Atraso nas entregas", "Equipe sempre no operacional", "Retrabalho constante", "Dados que não chegam a tempo"].map((item) => (
                     <p key={item} className="flex items-center gap-3 text-[15px] font-medium text-stone-700">
                       <span className="w-1.5 h-1.5 rounded-full bg-stone-400 shrink-0" />{item}
                     </p>
@@ -434,12 +452,12 @@ export default function IndexDesejo() {
             className="relative p-6 rounded-2xl bg-secondary/60 border border-border/40 overflow-hidden"
           >
             <div className="absolute top-0 left-6 right-6 h-px bg-border/60" />
-            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/55 mb-3">O que todos veem</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-ink-soft/72 mb-3">O que todos veem</p>
             <p className="text-[1.35rem] font-semibold leading-[1.1] tracking-tight text-ink/90 mb-4">
               A ponta do iceberg. <span className="font-serif italic font-normal">O sintoma.</span>
             </p>
             <ul className="space-y-2.5">
-              {["Atraso nas entregas", "Equipe sempre apagando incêndio", "Retrabalho constante", "Falta de dados para decidir"].map(s => (
+              {["Atraso nas entregas", "Equipe sempre no operacional", "Retrabalho constante", "Falta de dados para decidir"].map(s => (
                 <li key={s} className="flex items-center gap-2.5 text-[13px] text-ink-soft">
                   <span className="w-1.5 h-1.5 rounded-full bg-ink-soft/30 shrink-0" />{s}
                 </li>
@@ -498,54 +516,45 @@ export default function IndexDesejo() {
             viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
           >
-            <motion.div variants={fadeUp} className="mb-6">
-              {/* Label reencuadrado — não é "por que trava", é reconhecimento */}
-              <Label>Reconhecimento de fase</Label>
-              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight">
-                Toda empresa em crescimento
-                <br />
-                <span className="font-serif italic font-normal text-primary-deep">passa por isso.</span>
-              </h2>
-            </motion.div>
+            <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20">
+              {/* Esquerda: título + ponte (fixo no desktop) */}
+              <motion.div variants={fadeUp} className="lg:sticky lg:top-28 self-start">
+                <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight">
+                  Toda empresa em crescimento
+                  <br />
+                  <span className="font-serif italic font-normal text-primary-deep">passa por isso.</span>
+                </h2>
+                <div className="mt-8 border-l-2 border-primary/30 pl-6 max-w-md">
+                  <p className="text-[15px] text-ink/70 leading-[1.8]">
+                    Se você se reconheceu em mais de um desses pontos, sua empresa não está com problemas. Ela chegou num ponto que pede outro nível de estrutura.
+                  </p>
+                  <p className="text-[15px] text-ink font-medium leading-[1.8] mt-2">
+                    E se ela ainda não anda sem você, é exatamente com isso que a gente trabalha.
+                  </p>
+                </div>
+              </motion.div>
 
-            <motion.div variants={fadeUp} className="mt-16 grid sm:grid-cols-2 divide-y divide-border/40 border-t border-border/40">
-              {[
-                { icon: <IcBottleneck />, label: "A equipe espera respostas das mesmas pessoas" },
-                { icon: <IcShuffle />,    label: "Processos mudam dependendo de quem executa" },
-                { icon: <IcScatter />,    label: "Ninguém sabe onde está o histórico de decisões" },
-                { icon: <IcRepeat />,     label: "O mesmo problema reaparece todo mês" },
-                { icon: <IcAlert />,      label: "Urgências substituem prioridades" },
-                { icon: <IcClock />,      label: "Você passa mais tempo resolvendo operação do que pensando no crescimento" },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className={`group flex items-start gap-4 py-6 cursor-default
-                    ${i % 2 === 0 ? "sm:pr-12 sm:border-r sm:border-border/40" : "sm:pl-12"}`}
-                >
-                  <span className="text-ink-soft/35 shrink-0 mt-0.5 group-hover:text-primary transition-colors duration-300">
-                    {item.icon}
-                  </span>
-                  <span className="text-[14px] text-ink/70 leading-snug group-hover:text-ink transition-colors duration-300">
-                    {item.label}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* MUDANÇA 4b — fechamento positivo/aspiracional após a lista */}
-            <motion.div
-              variants={fadeUp}
-              className="mt-12 border-l-2 border-primary/30 pl-6 max-w-2xl"
-            >
-              <p className="text-[15px] text-ink/70 leading-[1.8]">
-                Se você se reconheceu em mais de um desses pontos, sua empresa não está com problemas.
-              </p>
-              <p className="text-[15px] text-ink font-medium leading-[1.8]">
-                Ela chegou em um ponto que exige outro nível de estrutura. Esse passo é o que separa as empresas que continuam crescendo das que travam.
-              </p>
-            </motion.div>
+              {/* Direita: os 6 sinais como lista */}
+              <motion.div variants={fadeUp} className="divide-y divide-border/40 border-t border-border/40">
+                {[
+                  { icon: <IcBottleneck />, label: "A empresa só anda no ritmo certo quando você está por perto" },
+                  { icon: <IcShuffle />,    label: "Cada decisão que importa ainda passa por você" },
+                  { icon: <IcScatter />,    label: "O que faz a operação funcionar mora na cabeça de poucas pessoas" },
+                  { icon: <IcRepeat />,     label: "Os mesmos problemas voltam todo mês, do mesmo jeito" },
+                  { icon: <IcAlert />,      label: "O urgente sempre passa na frente do importante" },
+                  { icon: <IcClock />,      label: "Você gasta mais energia tocando a operação do que pensando no crescimento" },
+                ].map((item, i) => (
+                  <div key={i} className="group flex items-center gap-4 py-4">
+                    <span className="w-10 h-10 rounded-lg bg-primary/[0.08] flex items-center justify-center text-primary-deep shrink-0 group-hover:bg-primary/15 transition-colors duration-300">
+                      {item.icon}
+                    </span>
+                    <span className="text-[15px] text-ink/80 leading-snug">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
 
           </motion.div>
         </div>
@@ -553,13 +562,12 @@ export default function IndexDesejo() {
 
       <Rule />
 
-      {/* ══════════════ 3. STATS — MUDANÇA 5 ══════════════
-          De estatísticas alarmistas ("empresas travaram") para
-          estatísticas de possibilidade ("o que a estrutura entrega").
+      {/* ══════════════ 4. SOLUÇÃO — MUDANÇA 6 ══════════════
+          Headline de desejo: "merece ter", não "já sabe que precisa mudar".
       */}
-      <section className="relative py-20 lg:py-24 px-6 lg:px-10 bg-surface-dark text-background overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/12 rounded-full blur-[120px] pointer-events-none" />
-
+      <section id="solucao" className="relative py-28 lg:py-40 px-6 lg:px-10 bg-surface-dark text-background overflow-hidden">
+        {/* Pico de profundidade — o mergulho (Bloco 3, jornada tonal) */}
+        <div aria-hidden="true" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/12 rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative">
           <motion.div
             initial="hidden"
@@ -567,45 +575,36 @@ export default function IndexDesejo() {
             viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
           >
-            <motion.p
-              variants={fadeUp}
-              className="text-[11px] font-mono uppercase tracking-[0.22em] text-background/30 mb-16"
-            >
-              O que a estrutura muda
-            </motion.p>
+            <motion.div variants={fadeUp} className="max-w-3xl">
+              <p className="text-[11px] uppercase tracking-[0.22em] font-medium text-background/60 mb-5 font-mono">O que fazemos</p>
+              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance text-background">
+                A operação que você imaginou.{" "}
+                <span className="font-serif italic font-normal text-primary">
+                  Construída de verdade.
+                </span>
+              </h2>
+            </motion.div>
 
-            {/* Stats aspiracionais — possibilidade, não alarme */}
-            <div className="grid md:grid-cols-3 border-t border-background/10">
+            <motion.div variants={fadeUp} className="mt-16 grid md:grid-cols-3 border-t border-background/10">
               {[
-                {
-                  counter: <><AnimatedNumber to={3} />x</>,
-                  text: "mais rápido o crescimento de empresas com operação estruturada comparado a concorrentes que ainda operam no improviso.",
-                },
-                {
-                  counter: <><AnimatedNumber to={40} suffix="%" /></>,
-                  text: "do tempo operacional que pode ser recuperado quando automações e fluxos claros assumem o que a equipe não deveria estar fazendo.",
-                },
-                {
-                  counter: <><AnimatedNumber to={12} />{" meses"}</>,
-                  text: "tempo médio para uma empresa sair do improviso e ter uma operação que funciona com previsibilidade, com ou sem a presença do fundador.",
-                },
+                { word: "Mergulho", text: "Antes de propor qualquer coisa, a gente mergulha fundo pra entender como a sua operação funciona de verdade." },
+                { word: "Estrutura", text: "Nada de sistema pronto. A gente organiza o que ficou submerso e desenha pra sua realidade." },
+                { word: "Fluxo", text: "O que fica é uma empresa que roda com clareza e leveza, com você no comando, não no operacional." },
               ].map((item, i) => (
-                <motion.div
+                <div
                   key={i}
-                  variants={fadeUp}
                   className="flex flex-col gap-6 py-14 lg:px-10 first:lg:pl-0 last:lg:pr-0 border-b border-background/10 lg:border-b-0 lg:border-r last:border-r-0 border-background/10"
                 >
                   <span className="block w-5 h-[2px] bg-primary/60" />
-                  <p className="text-[clamp(3.2rem,6vw,5.5rem)] font-semibold leading-none tracking-tight text-background tabular-nums">
-                    {item.counter}
+                  <p className="text-[clamp(2.6rem,5vw,4.5rem)] font-semibold leading-none tracking-tight text-background">
+                    {item.word}
                   </p>
                   <p className="text-[13px] text-background/70 leading-[1.75] max-w-xs">
                     {item.text}
                   </p>
-                </motion.div>
+                </div>
               ))}
-            </div>
-
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -625,14 +624,14 @@ export default function IndexDesejo() {
             variants={stagger}
           >
             <motion.div variants={fadeUp} className="mb-16">
-              <Label>Etapa 1 · O diagnóstico</Label>
-              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance max-w-2xl">
-                O{" "}
-                <span className="font-serif italic font-normal text-primary-deep">Mergulho Operacional™</span>
+              <Label>Como começa</Label>
+              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance max-w-4xl">
+                Seu{" "}
+                <span className="font-serif italic font-normal text-primary-deep">diagnóstico</span>
                 {" "}começa aqui
               </h2>
               <p className="mt-5 max-w-xl text-[15px] text-ink/70 leading-[1.85]">
-                Três perguntas rápidas. Sem burocracia. Nossa equipe analisa e entra em contato em até 24 horas.
+                Do briefing à entrega de um plano estratégico sob medida.
               </p>
             </motion.div>
 
@@ -640,8 +639,8 @@ export default function IndexDesejo() {
               {[
                 {
                   n: "01",
-                  t: "Você responde",
-                  d: "Perguntas objetivas sobre a operação da sua empresa. Menos de 5 minutos, sem formulário longo, sem compromisso.",
+                  t: "Você me conta o seu cenário",
+                  d: "Antes da reunião, você responde um briefing com perguntas objetivas sobre a operação da sua empresa. Menos de 5 minutos, sem formulário longo.",
                   detalhe: "Segmento · tamanho · principal desafio",
                 },
                 {
@@ -652,9 +651,9 @@ export default function IndexDesejo() {
                 },
                 {
                   n: "03",
-                  t: "Diagnóstico juntos",
-                  d: "Uma conversa de 30 a 45 minutos focada só no que mais pesa na sua operação hoje. Sem pitch, sem venda forçada.",
-                  detalhe: "Reunião · sem pressão · 100% gratuito",
+                  t: "Construção prática",
+                  d: "Uma conversa de 30 a 45 minutos sobre o que mais pesa hoje. Em até 48h, você recebe um plano estratégico completo, com o checklist de implementação em 3 passos.",
+                  detalhe: "Plano estratégico + checklist em até 48h",
                 },
               ].map((step, i) => (
                 <motion.div
@@ -663,68 +662,43 @@ export default function IndexDesejo() {
                     hidden:  { opacity: 0, y: 20 },
                     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease, delay: i * 0.1 } },
                   }}
-                  className="relative flex flex-col rounded-2xl border border-border/50 bg-background p-8 shadow-soft"
+                  className="group relative flex flex-col rounded-2xl border border-border/50 bg-background p-8 hover:border-primary/40 hover:shadow-soft transition-all duration-300"
                 >
-                  <span className="font-mono text-[11px] font-semibold text-primary-deep/50 tracking-widest mb-6">{step.n}</span>
-                  <h3 className="text-[17px] font-semibold mb-3">{step.t}</h3>
+                  <span className="font-mono text-[2.4rem] font-bold leading-none text-primary-deep mb-5">{step.n}</span>
+                  <h3 className="text-[18px] font-semibold mb-3 text-ink">{step.t}</h3>
                   <p className="text-[14px] text-ink/70 leading-[1.85] flex-1">{step.d}</p>
-                  <div className="mt-6 pt-5 border-t border-border/40">
-                    <p className="text-[12px] font-mono text-ink-soft/50 tracking-wide">{step.detalhe}</p>
+                  <div className="mt-6 pt-5 border-t border-border/40 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    <p className="text-[12px] font-mono text-ink-soft tracking-wide">{step.detalhe}</p>
                   </div>
                 </motion.div>
               ))}
             </motion.div>
 
-            <motion.div variants={fadeUp} className="mt-14 flex justify-center">
+            <motion.div variants={fadeUp} className="mt-14 flex flex-wrap justify-center gap-3">
+              {["Diagnóstico profissional", "Construção sob medida", "Responsabilidade por resultado"].map((s) => (
+                <span key={s} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/[0.08] border border-primary/20 text-[13px] font-medium text-ink">
+                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" className="text-primary-deep shrink-0"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  {s}
+                </span>
+              ))}
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="mt-10 flex justify-center">
               <motion.a
                 href="/mergulho"
-                onClick={() => trackEvent('click_cta_como_funciona', { location: 'como_funciona', label: 'Quero meu Mergulho Operacional' })}
+                onClick={() => trackEvent('click_cta_como_funciona', { location: 'como_funciona', label: 'Fazer o diagnóstico' })}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-8 py-4 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green"
               >
-                Quero meu Mergulho Operacional
+                Fazer o diagnóstico
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path d="M2 7h10M8 3l4 4-4 4"/>
                 </svg>
               </motion.a>
             </motion.div>
 
-          </motion.div>
-        </div>
-      </section>
-
-      <Rule />
-
-      {/* ══════════════ 4. SOLUÇÃO — MUDANÇA 6 ══════════════
-          Headline de desejo: "merece ter", não "já sabe que precisa mudar".
-      */}
-      <section id="solucao" className="py-28 lg:py-40 px-6 lg:px-10 bg-background">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={stagger}
-          >
-            <motion.div variants={fadeUp} className="max-w-3xl">
-              <Label>O que fazemos</Label>
-              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance">
-                A FeelFlow constrói a operação que{" "}
-                <span className="font-serif italic font-normal text-primary-deep">
-                  sua empresa merece ter.
-                </span>
-              </h2>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="mt-10 max-w-2xl space-y-4 text-[15px] text-ink/70 leading-[1.85]">
-              <p>Não começamos pela ferramenta. Começamos pela operação.</p>
-              <p>
-                Trabalhamos junto das lideranças para estruturar processos, alinhar áreas e{" "}
-                transformar melhorias em funcionamento real.
-              </p>
-              <p>Com estrutura, qualquer crescimento se torna sustentável.</p>
-            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -767,7 +741,7 @@ export default function IndexDesejo() {
                       <span className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
                         <Settings className="w-4 h-4" />
                       </span>
-                      <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-background/40">Estrutura</p>
+                      <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-background/60">Estrutura</p>
                     </div>
                     <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-2">
                       Operação que{" "}
@@ -830,7 +804,7 @@ export default function IndexDesejo() {
                     <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-ink-soft">
                       <Monitor className="w-4 h-4" />
                     </span>
-                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50">Comercial</p>
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft">Comercial</p>
                   </div>
                   <h3 className="text-[1.3rem] font-semibold leading-tight tracking-tight mb-5">
                     Nenhum lead se perde
@@ -855,10 +829,10 @@ export default function IndexDesejo() {
                     <span className="w-8 h-8 rounded-lg bg-background border border-border/40 flex items-center justify-center text-ink-soft">
                       <BarChart2 className="w-4 h-4" />
                     </span>
-                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50">Dados</p>
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft">Dados</p>
                   </div>
                   <h3 className="text-[1.3rem] font-semibold leading-tight tracking-tight mb-5">
-                    Visibilidade total
+                    Clareza pra decidir
                   </h3>
                   <div className="space-y-2.5">
                     {["Dashboards operacionais", "Crescimento sem retrabalho"].map(s => (
@@ -872,13 +846,68 @@ export default function IndexDesejo() {
 
               </div>
 
-              {/* Quote */}
-              <div className="mt-6 border-l-2 border-primary/30 pl-6 py-1">
-                <p className="text-[15px] text-ink-soft leading-[1.8]">
-                  Cada empresa recebe uma combinação diferente.{" "}
-                  <span className="text-ink/70">A solução nasce da operação, não de um pacote pronto.</span>
-                </p>
-              </div>
+              {/* Quote repetitiva removida (Letícia) */}
+
+              {/* Mockup — Portal do Cliente (o que o cliente vê) */}
+              <motion.div variants={fadeUp} className="mt-14 relative rounded-2xl border border-border/60 bg-background shadow-soft overflow-hidden">
+                <div className="flex items-center gap-2 px-4 h-10 border-b border-border/50 bg-secondary/40">
+                  <span className="w-2.5 h-2.5 rounded-full bg-border" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-border" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-border" />
+                  <div className="ml-3 h-5 px-3 flex items-center rounded-md bg-background border border-border/50 text-[10px] font-mono text-ink-soft">portal.feelflow.com.br</div>
+                </div>
+                {/* Header do portal */}
+                <div className="px-6 pt-6 pb-5 border-b border-border/50 bg-secondary/30 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center text-primary-deep">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    </span>
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-soft">Portal do cliente</p>
+                      <p className="text-[15px] font-semibold text-ink leading-tight">Acompanhe seu projeto</p>
+                    </div>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-1.5">
+                    {["Projeto", "Documentos", "Mensagens"].map((t, i) => (
+                      <span key={t} className={`text-[11px] px-3 py-1.5 rounded-full ${i === 0 ? "bg-primary text-white" : "text-ink-soft"}`}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+                {/* Corpo: progresso + milestones | documento + mensagem */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
+                  <div className="p-6 lg:border-r border-border/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[12px] font-medium text-ink">Mergulho Operacional</p>
+                      <p className="text-[12px] text-primary-deep font-semibold">68%</p>
+                    </div>
+                    <div className="h-2 rounded-full bg-secondary overflow-hidden mb-6">
+                      <div className="h-full rounded-full bg-primary" style={{ width: "68%" }} />
+                    </div>
+                    <div className="space-y-3.5">
+                      {[["Diagnóstico da operação", "feito"], ["Desenho dos fluxos", "feito"], ["Implementação dos processos", "agora"], ["Acompanhamento contínuo", "proximo"]].map(([t, s]) => (
+                        <div key={t} className="flex items-center gap-3">
+                          <span className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${s === "feito" ? "bg-primary text-white" : s === "agora" ? "bg-primary/20 text-primary-deep border border-primary" : "bg-secondary border border-border"}`}>
+                            {s === "feito" && <svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                          </span>
+                          <span className={`text-[13px] ${s === "proximo" ? "text-ink-soft" : "text-ink"}`}>{t}</span>
+                          {s === "agora" && <span className="text-[10px] text-primary-deep font-medium ml-auto px-2 py-0.5 rounded-full bg-primary/10">em andamento</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-6 space-y-4 bg-secondary/20">
+                    <div className="rounded-xl border border-border/50 bg-background p-4">
+                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-soft mb-2">Para aprovar</p>
+                      <p className="text-[13px] font-medium text-ink mb-3">Plano estratégico v2</p>
+                      <span className="inline-flex h-7 px-3 items-center rounded-full bg-primary text-white text-[11px] font-medium">Aprovar</span>
+                    </div>
+                    <div className="rounded-xl border border-border/50 bg-background p-4">
+                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-soft mb-2">Da equipe FeelFlow</p>
+                      <p className="text-[12px] text-ink/70 leading-relaxed">Finalizamos o mapeamento da operação. Dá uma olhada no plano e a gente segue pra implementação.</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
@@ -886,165 +915,6 @@ export default function IndexDesejo() {
 
       <Rule />
 
-      {/* Cenários — mantido como está (funciona bem) */}
-      <section id="cenarios" className="py-28 lg:py-40 px-6 lg:px-10 bg-background">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={stagger}
-          >
-            <motion.div variants={fadeUp} className="mb-16">
-              <Label>Cenários</Label>
-              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance max-w-2xl">
-                Situações que encontramos{" "}
-                <span className="font-serif italic font-normal text-primary-deep">com frequência</span>
-              </h2>
-            </motion.div>
-
-            {/* ── Bento Grid Cenários ── */}
-            <motion.div variants={fadeUp}>
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
-                {/* Card 1: Comercial — wide (col-span-3) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="relative lg:col-span-3 rounded-2xl bg-background border border-border/50 p-8 overflow-hidden shadow-soft"
-                >
-                  <div className="absolute inset-x-0 top-0 h-[2px] rounded-t-2xl bg-gradient-to-r from-primary/70 via-primary/30 to-transparent" />
-                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50 mb-5">Comercial</p>
-                  <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-8 max-w-[300px]">
-                    CRM que funciona{" "}
-                    <span className="font-serif italic font-normal text-primary-deep">de verdade</span>
-                  </h3>
-                  <div className="space-y-4">
-                    {[
-                      { antes: "CRM atualizado manualmente", depois: "CRM conectado" },
-                      { antes: "follow-up perdido",           depois: "tarefas automáticas" },
-                      { antes: "histórico espalhado",          depois: "visão em tempo real" },
-                    ].map((item) => (
-                      <div key={item.depois} className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                        <span className="text-[13px] text-ink-soft/38 line-through sm:w-[200px] shrink-0 leading-snug">{item.antes}</span>
-                        <div className="shrink-0 flex items-center gap-1.5">
-                          <div className="w-7 h-px bg-primary/35" />
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/55" />
-                        </div>
-                        <span className="text-[13px] font-medium text-ink/80 leading-snug">{item.depois}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Card 2: Gestão — tall (col-span-2, row-span-2) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="lg:col-span-2 lg:row-span-2 rounded-2xl bg-primary/[0.06] border border-primary/18 p-8 overflow-hidden"
-                >
-                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/65 mb-5">Gestão</p>
-                  <h3 className="text-[1.55rem] font-semibold leading-tight tracking-tight mb-3">
-                    Decisões com base{" "}
-                    <span className="font-serif italic font-normal text-primary-deep">em dados reais</span>
-                  </h3>
-                  <p className="text-[13px] text-ink-soft leading-relaxed mb-10">
-                    Do feeling para indicadores mensuráveis.
-                  </p>
-
-                  {/* Mini bar chart */}
-                  <div className="flex items-end gap-[5px] h-[68px] mb-10 px-1">
-                    {[32, 50, 40, 65, 75, 85, 94].map((h, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-t-sm"
-                        style={{
-                          height: `${h}%`,
-                          backgroundColor: i >= 3
-                            ? `hsl(158 64% 52% / ${0.38 + i * 0.13})`
-                            : "hsl(220 9% 46% / 0.14)",
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="w-full h-px bg-primary/14 mb-6" />
-
-                  <div className="space-y-4">
-                    {[
-                      { antes: "decisões no feeling",        depois: "indicadores claros" },
-                      { antes: "sem indicadores definidos",   depois: "acompanhamento real" },
-                      { antes: "acompanhamento informal",     depois: "decisões baseadas em dados" },
-                    ].map((item) => (
-                      <div key={item.depois} className="flex items-start gap-3">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/65 shrink-0" />
-                        <div className="min-w-0">
-                          <span className="text-[12px] text-ink-soft/38 line-through leading-snug mr-2">{item.antes}</span>
-                          <span className="text-[13px] font-medium text-ink/80 leading-snug">{item.depois}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Card 3: Operação — medium (col-span-2) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { y: -3 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="lg:col-span-2 rounded-2xl bg-secondary/55 border border-border/50 p-8 overflow-hidden shadow-soft"
-                >
-                  <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-ink-soft/50 mb-5">Operação</p>
-                  <h3 className="text-[1.45rem] font-semibold leading-tight tracking-tight mb-8 max-w-[260px]">
-                    De sobrecarregada para{" "}
-                    <span className="font-serif italic font-normal text-primary-deep">previsível</span>
-                  </h3>
-                  <div className="space-y-4">
-                    {[
-                      { antes: "atividades repetitivas",  depois: "fluxos automatizados" },
-                      { antes: "equipe sobrecarregada",   depois: "menos dependência" },
-                      { antes: "retrabalho constante",    depois: "mais previsibilidade" },
-                    ].map((item) => (
-                      <div key={item.depois} className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                        <span className="text-[13px] text-ink-soft/38 line-through sm:w-[180px] shrink-0 leading-snug">{item.antes}</span>
-                        <div className="shrink-0 flex items-center gap-1.5">
-                          <div className="w-7 h-px bg-primary/35" />
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/55" />
-                        </div>
-                        <span className="text-[13px] font-medium text-ink/80 leading-snug">{item.depois}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Card 4: CTA accent (col-span-1) */}
-                <motion.div
-                  whileHover={prefersReduced ? {} : { scale: 1.025 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="lg:col-span-1 rounded-2xl bg-primary p-8 overflow-hidden relative grain flex flex-col justify-between min-h-[180px]"
-                >
-                  <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-                  <div className="relative z-10">
-                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-white/50 mb-4">Próximo passo</p>
-                    <p className="text-[1.15rem] font-semibold text-white leading-[1.3]">
-                      Identifique onde sua operação perde energia
-                    </p>
-                  </div>
-                  <a
-                    href="#cta-final"
-                    className="relative z-10 mt-8 inline-flex items-center gap-1.5 text-[13px] font-semibold text-white/85 hover:text-white transition-colors group"
-                  >
-                    Fazer diagnóstico
-                    <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
-                  </a>
-                </motion.div>
-
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      <Rule />
 
       {/* ══════════════ O QUE MUDA — MUDANÇA 8 ══════════════
           Cards com emoção e linguagem de aspiração.
@@ -1058,65 +928,56 @@ export default function IndexDesejo() {
             viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
           >
-            <motion.div variants={fadeUp} className="mb-16">
+            <motion.div variants={fadeUp} className="mb-16 max-w-2xl">
               <Label>Transformação</Label>
-              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance max-w-2xl">
+              <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance">
                 O que muda{" "}
-                <span className="font-serif italic font-normal text-primary-deep">na prática</span>
+                <span className="font-serif italic font-normal text-primary-deep">pra você</span>
               </h2>
+              <p className="mt-5 text-[15px] text-ink/70 leading-[1.85]">
+                Não é só a operação que muda. Muda o seu lugar nela.
+              </p>
             </motion.div>
 
-            {/* ── Split Antes → Depois (layout editorial, distinto dos bentos) ── */}
-            <motion.div variants={fadeUp} className="border-y border-border/40 divide-y divide-border/40">
+            {/* Jornada de transformação do dono (cards) */}
+            <motion.div variants={fadeUp} className="grid sm:grid-cols-2 gap-5">
               {[
                 {
-                  cat: "Liderança",
-                  antes: "Quando você sai de férias, a operação sente",
-                  depois: <>Processos que funcionam <span className="font-serif italic font-normal text-primary-deep">com ou sem a sua presença</span></>,
-                  tags: ["processos padronizados", "responsabilidades definidas", "autonomia da equipe"],
+                  cat: "Seu dia",
+                  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>,
+                  depois: <>Você decide o que importa, <span className="font-serif italic font-normal text-primary-deep">e o resto a operação resolve</span></>,
+                  tags: ["processos com dono", "equipe autônoma", "menos interrupções"],
                 },
                 {
-                  cat: "Comercial",
-                  antes: "Cada lead ignorado é uma oportunidade perdida",
-                  depois: <>Cada oportunidade <span className="font-serif italic font-normal text-primary-deep">acompanhada automaticamente</span></>,
-                  tags: ["automação de follow-up", "CRM integrado", "histórico centralizado"],
+                  cat: "Seu papel",
+                  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>,
+                  depois: <>Você volta a liderar, <span className="font-serif italic font-normal text-primary-deep">em vez de segurar tudo de pé</span></>,
+                  tags: ["fundador no estratégico", "operação que anda só", "leveza"],
                 },
                 {
-                  cat: "Operação",
-                  antes: "Urgências tomam o tempo de crescimento",
-                  depois: <>Operação previsível que devolve o <span className="font-serif italic font-normal text-primary-deep">espaço para pensar grande</span></>,
-                  tags: ["prioridades no lugar", "menos urgências", "fundador estratégico"],
+                  cat: "Sua cabeça",
+                  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1v.2h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>,
+                  depois: <>O que faz a empresa andar <span className="font-serif italic font-normal text-primary-deep">deixa de viver só em você</span></>,
+                  tags: ["conhecimento registrado", "histórico acessível", "rastreabilidade"],
                 },
                 {
-                  cat: "Dados & Histórico",
-                  antes: "O histórico da empresa existe só na cabeça das pessoas",
-                  depois: <>Tudo registrado, <span className="font-serif italic font-normal text-primary-deep">acessível e rastreável</span></>,
-                  tags: ["histórico de decisões", "dashboards", "indicadores", "rastreabilidade"],
+                  cat: "Seu tempo",
+                  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>,
+                  depois: <>Sobra espaço pra você <span className="font-serif italic font-normal text-primary-deep">pensar grande de novo</span></>,
+                  tags: ["foco no crescimento", "agenda mais leve", "visão de longo prazo"],
                 },
               ].map((row, i) => (
-                <div key={i} className="grid md:grid-cols-[minmax(0,0.8fr)_auto_minmax(0,1.2fr)] gap-5 md:gap-8 items-center py-8 lg:py-10">
-                  {/* Antes */}
-                  <div className="md:pr-2">
-                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink-soft/40 mb-2">Antes</p>
-                    <p className="text-[15px] text-ink-soft/55 line-through decoration-ink-soft/25 leading-snug">{row.antes}</p>
+                <div key={i} className="group relative rounded-2xl border border-border/60 bg-background p-7 overflow-hidden hover:border-primary/40 hover:shadow-soft transition-all duration-300">
+                  <div aria-hidden="true" className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-primary/[0.07] blur-2xl pointer-events-none" />
+                  <div className="relative flex items-center gap-3 mb-5">
+                    <span className="w-11 h-11 rounded-xl bg-primary/12 flex items-center justify-center text-primary-deep shrink-0">{row.icon}</span>
+                    <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep">{row.cat}</p>
                   </div>
-                  {/* Seta de transformação */}
-                  <div className="flex md:justify-center">
-                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-deep shrink-0">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="rotate-90 md:rotate-0">
-                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                  </div>
-                  {/* Depois */}
-                  <div>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-primary-deep/65 mb-2">{row.cat}</p>
-                    <h3 className="text-[1.3rem] lg:text-[1.5rem] font-semibold leading-tight tracking-tight text-ink mb-3.5">{row.depois}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {row.tags.map(t => (
-                        <span key={t} className="text-[12px] px-3 py-1.5 rounded-full bg-background border border-border/50 text-ink/60">{t}</span>
-                      ))}
-                    </div>
+                  <h3 className="relative text-[1.3rem] lg:text-[1.45rem] font-semibold leading-tight tracking-tight text-ink mb-4">{row.depois}</h3>
+                  <div className="relative flex flex-wrap gap-2">
+                    {row.tags.map(t => (
+                      <span key={t} className="text-[12px] px-3 py-1.5 rounded-full bg-secondary/60 text-ink/70">{t}</span>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -1194,7 +1055,7 @@ export default function IndexDesejo() {
                     <h3 className="text-[17px] font-semibold mb-3">{step.t}</h3>
                     <p className="text-[14px] text-ink/70 leading-[1.85] mb-5">{step.d}</p>
                     <div className="space-y-1.5">
-                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-soft/40 mb-2">Entrega</p>
+                      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-soft mb-2">Entrega</p>
                       {step.items.map(item => (
                         <div key={item} className="flex items-center gap-2">
                           <span className="w-1 h-1 rounded-full bg-primary/60 shrink-0" />
@@ -1212,43 +1073,7 @@ export default function IndexDesejo() {
 
       <Rule />
 
-      {/* ══════════════ CTA INTERMEDIÁRIO — captura quem já decidiu ══════════════
-          Único CTA entre o hero e o fechamento. Card verde-tingido, compacto,
-          posicionado após o método (visitante já entendeu o caminho completo).
-      */}
-      <section className="py-14 lg:py-20 px-6 lg:px-10 bg-background">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.6, ease }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="rounded-3xl bg-primary/[0.06] border border-primary/20 px-8 py-9 lg:px-12 lg:py-11 flex flex-col md:flex-row md:items-center md:justify-between gap-7">
-            <div>
-              <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-primary-deep/65 mb-3">Reconheceu a sua operação aqui?</p>
-              <h3 className="text-[clamp(1.4rem,2.6vw,1.9rem)] font-semibold leading-tight tracking-tight text-ink max-w-md">
-                O diagnóstico leva{" "}
-                <span className="font-serif italic font-normal text-primary-deep">menos de 5 minutos.</span>
-              </h3>
-            </div>
-            <motion.a
-              href="/mergulho"
-              onClick={() => trackEvent('click_cta_mid', { location: 'cta_mid', label: 'Fazer Diagnóstico' })}
-              whileHover={prefersReduced ? {} : { scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="group btn-shine inline-flex items-center justify-center gap-2.5 bg-primary text-white px-7 py-4 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-green hover:shadow-flow shrink-0 self-start md:self-auto"
-            >
-              Fazer Diagnóstico
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform duration-300 group-hover:translate-x-0.5">
-                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </motion.a>
-          </div>
-        </motion.div>
-      </section>
-
-      <Rule />
+      {/* CTA intermediário removido (Letícia: não fazia sentido entre Etapa 2 e Quem faz) */}
 
       {/* Sobre a Letícia — mantido integralmente (excelente) */}
       <motion.section
@@ -1309,21 +1134,22 @@ export default function IndexDesejo() {
 
       {/* FAQ — mantido */}
       <section id="faq" className="py-28 lg:py-40 px-6 lg:px-10 bg-secondary/40">
-        <div className="max-w-2xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={stagger}>
-            <motion.div variants={fadeUp} className="mb-14">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={stagger} className="grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20">
+            <motion.div variants={fadeUp} className="lg:sticky lg:top-28 self-start">
               <Label>Dúvidas frequentes</Label>
               <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-balance">
                 Dúvidas que aparecem antes de começar
               </h2>
             </motion.div>
             <motion.div variants={fadeIn}>
-              <FaqItem id="1" q="Minha empresa ainda é pequena para pensar nisso?"         a="Quando processos começam a depender de pessoas-chave, urgências aumentam e a operação passa a consumir mais energia do que deveria. Já existem sinais suficientes para organizar a base." />
+              <FaqItem id="1" q="Como sei se isso é pra mim?"         a="Se sua empresa cresceu e você sente que carrega muita coisa nas costas, é pra você. Quando a operação começa a depender de você e de poucas pessoas-chave, já existem sinais suficientes pra organizar a base com clareza." />
               <FaqItem id="2" q="Vou precisar parar a operação para implementar mudanças?" a="As melhorias acontecem dentro da realidade da empresa, respeitando a rotina da equipe. Nada é implementado de forma abrupta." />
-              <FaqItem id="3" q="Isso vai criar mais burocracia?"                          a="O objetivo é o oposto. Estrutura bem desenhada elimina redundâncias, reduz ruído e faz a operação funcionar com menos esforço, não mais." />
+              <FaqItem id="3" q="Isso vai criar mais burocracia?"                          a="O objetivo é o oposto: menos ruído, menos retrabalho, uma operação que anda com clareza e leveza, não com mais regras pra você administrar." />
               <FaqItem id="4" q="Vocês chegam com processos prontos?"                      a={`Não. Cada empresa tem uma dinâmica, pessoas e desafios diferentes.\n\nA construção acontece junto das lideranças para criar algo que faça sentido no dia a dia e que a equipe realmente consiga aplicar.`} />
               <FaqItem id="5" q="E tecnologia? Vou precisar mudar tudo?"                  a={`Não necessariamente. Tecnologia entra quando faz sentido.\n\nPrimeiro a operação precisa estar clara. Depois avaliamos onde automações e ferramentas realmente ajudam, sem trocar o que funciona.`} />
               <FaqItem id="6" q="Eu já sei exatamente o que está errado. Ainda faz sentido conversar?" a={`Sim. Muitas empresas já sabem o que precisa melhorar.\n\nO desafio está em transformar esse diagnóstico em mudanças estruturadas, sem travar a operação no processo.`} />
+              <FaqItem id="8" q="Quanto custa?" a="Depende do que o diagnóstico revelar. O escopo é fechado e desenhado pra sua realidade. Você paga por uma operação funcionando, não por horas, e a conversa inicial mostra o tamanho certo, sem compromisso." />
               <FaqItem id="7" q="Quanto tempo leva?"                                       a={`Depende do momento da empresa e do que precisa ser estruturado.\n\nA proposta é sempre trabalhar em ciclos curtos, entregando valor antes de avançar para a próxima etapa.`} />
             </motion.div>
           </motion.div>
@@ -1337,43 +1163,47 @@ export default function IndexDesejo() {
           Elemento de exclusividade para posicionamento premium.
           Subtext que valoriza quem chegou até aqui.
       */}
-      <section id="cta-final" className="relative py-28 lg:py-40 px-6 lg:px-10 bg-surface-dark text-background overflow-hidden">
-        {/* Atmosfera — glow verde, mesma linguagem da seção de stats */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 w-[700px] h-[700px] bg-primary/12 rounded-full blur-[140px] pointer-events-none" />
+      <section id="cta-final" className="relative py-28 lg:py-40 px-6 lg:px-10 bg-gradient-to-b from-secondary/30 to-background text-ink overflow-hidden">
+        {/* Atmosfera — fluxo: resolução na luz, com motivo abstrato de correnteza (Valentina) */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 w-[760px] h-[760px] bg-primary/15 rounded-full blur-[150px]" />
+          <div className="absolute -top-24 right-[-8%] w-[440px] h-[440px] bg-primary/10 rounded-full blur-[130px]" />
+          <svg className="absolute bottom-0 right-0 w-[62%] max-w-[820px]" viewBox="0 0 600 220" fill="none" preserveAspectRatio="xMaxYMax meet">
+            <path d="M0 130 C 120 100, 200 160, 320 130 S 520 100, 600 140" stroke="hsl(158 64% 52% / 0.20)" strokeWidth="1.5" />
+            <path d="M0 160 C 140 130, 220 190, 340 160 S 520 130, 600 170" stroke="hsl(158 64% 52% / 0.13)" strokeWidth="1.5" />
+            <path d="M0 100 C 100 80, 200 130, 320 100 S 520 70, 600 110" stroke="hsl(220 9% 46% / 0.10)" strokeWidth="1.5" />
+          </svg>
+        </div>
 
-        <div className="max-w-4xl mx-auto relative">
+        <div className="max-w-7xl mx-auto relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
           >
-            <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.22em] font-medium text-background/40 mb-5 font-mono">
+            <motion.p variants={fadeUp} className="text-[11px] uppercase tracking-[0.22em] font-medium text-ink-soft mb-5 font-mono">
               Próximo passo
             </motion.p>
 
             {/* Headline de desejo — não de alívio de dor */}
             <motion.h2
               variants={fadeUp}
-              className="text-[clamp(2.2rem,6vw,4.5rem)] font-semibold leading-[1.0] text-background text-balance tracking-tight"
+              className="text-[clamp(2.2rem,6vw,4.5rem)] font-semibold leading-[1.0] text-ink text-balance tracking-tight"
             >
               Chegou a hora da sua operação{" "}
-              <span className="font-serif italic font-normal text-primary">trabalhar por você.</span>
+              <span className="font-serif italic font-normal text-primary-deep">trabalhar por você.</span>
             </motion.h2>
 
             {/* Subtext que valoriza o leitor e posiciona a FeelFlow como parceiro de crescimento */}
-            <motion.p variants={fadeUp} className="mt-6 text-[17px] text-background/65 leading-[1.75] max-w-lg">
-              As empresas que chegam até aqui já deram o passo mais importante: reconheceram que operação estruturada é vantagem competitiva, não custo.
+            <motion.p variants={fadeUp} className="mt-6 text-[17px] text-ink/70 leading-[1.75] max-w-lg">
+              Se você chegou até aqui, é porque quer ver a empresa funcionando do jeito que imaginou, com você no comando, não no operacional.
             </motion.p>
 
-            {/* MUDANÇA 10 — Elemento de exclusividade */}
-            <motion.div
-              variants={fadeUp}
-              className="mt-8 inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-primary/25 bg-primary/[0.10]"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-              <p className="text-[12px] text-background/80 font-medium">
-                A FeelFlow acompanha no máximo 8 projetos por trimestre para garantir atenção integral a cada empresa.
+            {/* Nota de capacidade — fora do container verde (Letícia) */}
+            <motion.div variants={fadeUp} className="mt-8 max-w-md border-l-2 border-primary/30 pl-4">
+              <p className="text-[12px] text-ink-soft leading-relaxed">
+                Acompanhamos no máximo 8 projetos por trimestre para garantir atenção integral a cada empresa.
               </p>
             </motion.div>
 
@@ -1381,47 +1211,54 @@ export default function IndexDesejo() {
               <div className="relative inline-flex">
                 <motion.a
                   href="/mergulho"
-                  onClick={() => trackEvent('click_cta_final', { location: 'cta_final', label: 'Iniciar meu Mergulho Operacional' })}
+                  onClick={() => trackEvent('click_cta_final', { location: 'cta_final', label: 'Fazer o diagnóstico' })}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   className="group btn-shine inline-flex items-center gap-2.5 bg-primary text-white px-7 py-3.5 rounded-full text-[14px] font-semibold hover:bg-primary-glow transition-all duration-300 shadow-flow"
                 >
-                  Iniciar meu Mergulho Operacional
+                  Fazer o diagnóstico
                 </motion.a>
               </div>
-              <p className="text-[12px] text-background/45 font-mono tracking-wide">
-                Perguntas rápidas&nbsp;•&nbsp;Sem burocracia&nbsp;•&nbsp;Menos de 5 minutos
+              <p className="text-[12px] text-ink-soft font-mono tracking-wide">
+                Online&nbsp;•&nbsp;Rápido&nbsp;•&nbsp;Sem burocracia
               </p>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer — mantido */}
-      <footer className="border-t border-border/40 py-10 px-6 lg:px-10 bg-background">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-3">
-          {/* Método Clarear + fases numa linha só */}
-          <div className="flex items-center gap-2 font-mono uppercase tracking-[0.22em] text-[10px] text-ink-soft/45">
-            <span>Método Clarear™</span>
-            <span className="text-border/60">·</span>
-            <span>Imersão</span>
-            <span className="text-border/60">·</span>
-            <span>Mapeamento</span>
-            <span className="text-border/60">·</span>
-            <span>Clareza</span>
-          </div>
-          {/* Links */}
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-5 text-[12px] text-ink-soft/40">
-            <a href="mailto:contato@feelflow.com.br" className="hover:text-ink-soft transition-colors">contato@feelflow.com.br</a>
-            <span className="hidden sm:inline text-border">|</span>
-            <a href="/privacidade" className="hover:text-ink-soft transition-colors">Política de Privacidade</a>
-            <span className="hidden sm:inline text-border">|</span>
+      {/* Footer — integrado ao CTA final (sem borda dura, contínuo no claro), compacto e simétrico à nav */}
+      <footer className="px-6 lg:px-10 pt-2 pb-24 bg-background">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+          <a href="#" className="inline-flex items-center min-h-[44px]" aria-label="FeelFlow — voltar ao topo">
+            <img src={logo} alt="FeelFlow" className="h-9 w-auto opacity-80" />
+          </a>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[12px] text-ink-soft">
+            <a href="mailto:contato@feelflow.com.br" className="inline-flex items-center min-h-[44px] hover:text-ink transition-colors">contato@feelflow.com.br</a>
+            <span className="text-border" aria-hidden="true">|</span>
+            <a href="/privacidade" className="inline-flex items-center min-h-[44px] hover:text-ink transition-colors">Política de Privacidade</a>
+            <span className="text-border" aria-hidden="true">|</span>
             <span>© {new Date().getFullYear()} FeelFlow</span>
           </div>
         </div>
       </footer>
 
-      {/* WhatsApp flutuante removido — aparece somente na última página (Mergulho) */}
+      {/* WhatsApp flutuante — discreto e branded (matcha, não o verde padrão); surge ao rolar */}
+      <a
+        href="https://wa.me/551153048305"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Falar no WhatsApp"
+        onClick={() => trackEvent('click_whatsapp', { location: 'float' })}
+        style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+        className={`fixed right-6 z-50 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-flow hover:bg-primary-glow transition-all duration-300 ${
+          scrolled && !nearBottom ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-90 pointer-events-none"
+        }`}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zM12.04 20.15h-.01c-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.26 8.26 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43-.14-.01-.31-.01-.48-.01s-.43.06-.66.31c-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29z"/>
+        </svg>
+      </a>
 
     </div>
   );
