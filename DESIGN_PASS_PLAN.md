@@ -36,9 +36,11 @@
 1. **Blocos 1 + 2** ✅ FEITOS (contraste→AA, foco visível, CTA único, CTA na nav).
 2. **Bloco 3 (núcleo)** ✅ FEITO (Solução escura/mergulho + CTA final luminoso/fluxo). Restante: variar +layouts (parcial: header de "O que muda" virou 2 colunas com mini-gráfico).
 3. **Bloco 4** ✅ FEITO (fundiu Cenários→O que muda, −1,6 viewports, gráfico resgatado; stats reformulada sem número → Clareza/Leveza/Comando).
-4. **Bloco 5 (responsividade)** ⬜ PENDENTE — próxima sessão (mobile: hero scroll-driven, bentos, touch targets).
+4. **Bloco 5 (responsividade)** ✅ FEITO (2026-06-12). Achado: o mobile já estava muito bom (o design pass usou utilitários Tailwind que empilham). Hero `240vh` é `lg:` → no mobile vira `sticky h-100svh` limpo. Aplicado: touch targets ≥44px (nav CTA, logo/links do rodapé), `scroll-margin-top: 88px` nos `[id]` (skip-link não cai atrás da nav), WhatsApp float com `safe-area-inset` + recolhe ao chegar no rodapé, **sem overflow horizontal a 375 e 320px**. Verificado via Chrome DevTools (device emulation).
 + Extra (pedido de Letícia): Solução ganhou o layout 3-colunas da stats (Mergulho · Estrutura · Fluxo).
-Cada bloco com gate de Letícia antes de portar v2 → repo real + deploy.
+
+## ✅ Design pass CONCLUÍDO e EM PRODUÇÃO (2026-06-12)
+Todos os 5 blocos feitos. Portado v2 → repo real (`feelflow-landing`) e **deployado em produção** (`feelflow.com.br`, commit `aac3a0a`, deploy Vercel `dpl_3okQajD…` READY). WhatsApp oficial no ar (`wa.me/551153048305`). Gate de Letícia cumprido.
 
 ## Decisões de Letícia ainda abertas (resolver nos blocos)
 - Consolidar seções (encurtar) vs. manter todo o conteúdo — definir no Bloco 4.

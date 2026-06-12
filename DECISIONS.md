@@ -44,7 +44,15 @@
 **Decisão:** Trabalhar numa **cópia duplicada** do projeto (`~/Desktop/Projetos/LandingPage_FeelFlow_v2`, sem `.git`, porta **3031**, node_modules próprio via `bun`). Original intacta (porta 3030/produção). **Nenhum commit/deploy** das mudanças até aprovação final de Letícia. Quando aprovado: portar os arquivos alterados pro repo real e deployar (passo com gate).
 **Processo de copy (governança):** toda copy de LP passa por **Ana Valente (Content) → Gabriela (Growth, revisão) → aprovação de Letícia (gate, saída externa) → Fernanda (Frontend) → verificação no preview**. Nunca aplicar copy crua/sugerida sem revisão de contexto.
 **Descartado:** branch git/worktree (Letícia preferiu pasta duplicada); editar direto na LP no ar (risco).
-**Implementado:** cópia v2 com 7 seções de copy revisadas (Hero, Sinais, O que muda, Solução, Etapas, FAQ, CTA final). Aguarda pass de Direção Criativa + UX/UI/A11y/Responsividade antes do deploy.
+**Implementado:** cópia v2 com 7 seções de copy revisadas + design pass B1-B5 + elevação de UI. **Portado e deployado em produção em 2026-06-12** (commit `aac3a0a`) — gate cumprido.
+
+### D-006 — Meta Pixel adiado (exige Portfólio Empresarial; só com mídia paga)
+**Data:** 2026-06-12 | **Status:** `ativa` | **Responsável:** Letícia
+**Contexto:** Ao tentar criar o pixel no Gerenciador de Eventos (conta `act=2076933513232234`, negócio "FeelFlow - Operações"), a Meta bloqueou: exige um **Portfólio Empresarial (Meta Business Portfolio)** antes de criar qualquer pixel/dataset. Não havia nenhum dataset.
+**Decisão:** **Adiar o Pixel.** Ele só serve pra mídia paga Meta/IG, e a estratégia atual é cold outreach (não tráfego pago). Analytics já coberto por GA4 (`G-6ST3X5DCV5`). Montar o Portfólio agora seria estrutura sem uso imediato.
+**Quando retomar:** ao ligar mídia paga → Letícia cria o Portfólio (formulário dela, dados da empresa) → cria pixel Web "FeelFlow" → passa o ID (~16 díg.) → instalar snippet `fbq` no `<head>` + deploy. O Portfólio também é pré-requisito do WABA (revisita D-012 do CRM).
+**Descartado:** criar o Portfólio Empresarial nesta sessão (não é minha alçada — entidade com dados/credenciais de Letícia); criar o pixel agora (bloqueado).
+**Implementado:** N/A (regra/timing). Atualiza a sequência prevista na D-003.
 
 ---
 
